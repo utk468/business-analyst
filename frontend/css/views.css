@@ -1,0 +1,380 @@
+/* Specific View Layouts: Vault, TOC, SWOT, Personas, Risks, Tables */
+
+/* History / Vault View */
+.history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.report-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.report-card-header {
+    border-bottom: 1px solid var(--border-glass);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.report-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.report-card-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+}
+
+.report-card-body {
+    flex-grow: 1;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+}
+
+.report-card-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.card-btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.card-btn.view {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    flex-grow: 1;
+}
+
+.card-btn.view:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.card-btn.delete {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: var(--error);
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-btn.delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--error);
+}
+
+/* Report Detailed Blueprint View */
+.report-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    min-height: 80vh;
+}
+
+@media (max-width: 1024px) {
+    .report-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.report-sidebar {
+    position: sticky;
+    top: 2rem;
+    height: calc(100vh - 4rem);
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media (max-width: 1024px) {
+    .report-sidebar {
+        position: relative;
+        top: 0;
+        height: auto;
+    }
+}
+
+.toc-link {
+    display: block;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    transition: var(--transition);
+}
+
+.toc-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.toc-link.active {
+    color: var(--secondary);
+    background: rgba(6, 182, 212, 0.07);
+    border-left-color: var(--secondary);
+}
+
+.report-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.report-section {
+    padding: 2.5rem;
+    scroll-margin-top: 2rem;
+}
+
+/* Metrics and Values */
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.metric-val {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* SWOT Analysis Box */
+.swot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 600px) {
+    .swot-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.swot-box {
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-glass);
+}
+
+.swot-box.s { background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.15); }
+.swot-box.w { background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.15); }
+.swot-box.o { background: rgba(6, 182, 212, 0.05); border-color: rgba(6, 182, 212, 0.15); }
+.swot-box.t { background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.15); }
+
+.swot-box h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.swot-box.s h3 { color: var(--success); }
+.swot-box.w h3 { color: var(--error); }
+.swot-box.o h3 { color: var(--secondary); }
+.swot-box.t h3 { color: var(--warning); }
+
+.swot-list {
+    list-style: none;
+}
+
+.swot-list li {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    padding-left: 14px;
+    position: relative;
+}
+
+.swot-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: inherit;
+}
+
+/* Tabular Projections */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+}
+
+th, td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+th {
+    background: rgba(255,255,255,0.02);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+tr:hover {
+    background: rgba(255,255,255,0.01);
+}
+
+/* User Personas */
+.personas-slider {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.persona-profile {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 2rem;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    background: rgba(255,255,255,0.01);
+    padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .persona-profile {
+        grid-template-columns: 1fr;
+    }
+}
+
+.persona-avatar-box {
+    text-align: center;
+    border-right: 1px solid var(--border-glass);
+    padding-right: 2rem;
+}
+
+@media (max-width: 768px) {
+    .persona-avatar-box {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid var(--border-glass);
+        padding-bottom: 1.5rem;
+    }
+}
+
+.persona-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    margin: 0 auto 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.persona-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.persona-stat {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.persona-stat span {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.persona-details h4 {
+    font-size: 0.95rem;
+    color: var(--secondary);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.persona-details h4:first-of-type {
+    margin-top: 0;
+}
+
+/* Risks Lists */
+.risk-item {
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.01);
+    border: 1px solid var(--border-glass);
+    margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: 140px 100px 100px 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .risk-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+.risk-type {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.risk-indicator {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.risk-indicator.high { background: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.3); }
+.risk-indicator.medium { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+.risk-indicator.low { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }

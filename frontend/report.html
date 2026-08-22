@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Strategy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- ChartJS for financial projections -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="no-print">
+        <div class="logo-container">
+            <div class="logo-text">Business Strategy</div>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-btn secondary">New Strategy</a>
+            <a href="history.html" class="nav-btn secondary">Past Strategies</a>
+            <button onclick="window.print();" class="nav-btn primary" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span>Print Strategy</span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Loading Indicator -->
+        <div id="report-loading" style="text-align: center; padding: 10rem 0;">
+            <div class="spinner" style="margin: 0 auto 1.5rem auto; width: 50px; height: 50px; border-width: 5px; border-top-color: var(--secondary);"></div>
+            <h2>Analyzing Intelligence Dossier...</h2>
+            <p style="color: var(--text-muted); margin-top: 6px;">Consolidating 15-agent insights and generating financial matrices.</p>
+        </div>
+
+        <!-- Report Main Layout (Hidden during loading) -->
+        <div class="report-layout" id="report-main-layout" style="display: none;">
+            <!-- Left Sticky Sidebar TOC -->
+            <aside class="glass-panel report-sidebar no-print">
+                <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem; display:block; padding-left:1rem;">Table of Contents</span>
+                <a href="#sec-summary" class="toc-link active" data-sec="summary">1. Executive Summary</a>
+                <a href="#sec-overview" class="toc-link" data-sec="overview">2. Business Overview</a>
+                <a href="#sec-market" class="toc-link" data-sec="market">3. Market Analysis</a>
+                <a href="#sec-trends" class="toc-link" data-sec="trends">4. Industry Trends</a>
+                <a href="#sec-personas" class="toc-link" data-sec="personas">5. Customer Personas</a>
+                <a href="#sec-competitors" class="toc-link" data-sec="competitors">6. Competitor Landscape</a>
+                <a href="#sec-product" class="toc-link" data-sec="product">7. Product Strategy</a>
+                <a href="#sec-branding" class="toc-link" data-sec="branding">8. Branding Strategy</a>
+                <a href="#sec-marketing" class="toc-link" data-sec="marketing">9. Marketing Channels</a>
+                <a href="#sec-sales" class="toc-link" data-sec="sales">10. Sales Strategy</a>
+                <a href="#sec-operations" class="toc-link" data-sec="operations">11. Operational Strategy</a>
+                <a href="#sec-financials" class="toc-link" data-sec="financials">12. Financial Planning</a>
+                <a href="#sec-forecast" class="toc-link" data-sec="forecast">13. Projections & Charts</a>
+                <a href="#sec-risks" class="toc-link" data-sec="risks">14. Risk Assessment</a>
+                <a href="#sec-swot" class="toc-link" data-sec="swot">15. SWOT Analysis</a>
+                <a href="#sec-growth" class="toc-link" data-sec="growth">16. Growth Roadmap</a>
+                <a href="#sec-investors" class="toc-link" data-sec="investors">17. Investor Readiness</a>
+                <a href="#sec-recommendations" class="toc-link" data-sec="recommendations">18. Recommendations</a>
+                <a href="#sec-action" class="toc-link" data-sec="action">19. Immediate Action Plan</a>
+                <a href="#sec-conclusion" class="toc-link" data-sec="conclusion">20. Strategic Conclusion</a>
+            </aside>
+
+            <!-- Right Scrollable Content -->
+            <div class="report-content">
+                <!-- 1. Executive Summary -->
+                <section id="sec-summary" class="glass-panel report-section">
+                    <h2>Executive Summary</h2>
+                    <div id="content-summary" style="font-size: 1.1rem; line-height: 1.7; font-family: 'Playfair Display', serif; font-style: italic; color: var(--text-primary);"></div>
+                </section>
+
+                <!-- 2. Business Overview -->
+                <section id="sec-overview" class="glass-panel report-section">
+                    <h2>Business Overview</h2>
+                    <p id="content-overview" style="margin-bottom: 1.5rem;"></p>
+                    <div class="metric-grid" id="overview-metadata">
+                        <!-- Filled by JS -->
+                    </div>
+                </section>
+
+                <!-- 3. Market Analysis -->
+                <section id="sec-market" class="glass-panel report-section">
+                    <h2>Market Analysis</h2>
+                    <div class="metric-grid">
+                        <div class="metric-card">
+                            <div class="metric-val" id="market-tam">--</div>
+                            <div class="metric-label">Target Market Size</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-val" id="market-cagr">--</div>
+                            <div class="metric-label">Estimated Growth</div>
+                        </div>
+                    </div>
+                    <p id="market-overview-txt" style="margin-bottom: 1.5rem;"></p>
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--secondary);">Market Opportunities</h3>
+                        <ul id="market-opportunities-list" style="padding-left: 20px;"></ul>
+                    </div>
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--secondary);">Unserved Market Gaps</h3>
+                        <ul id="market-gaps-list" style="padding-left: 20px;"></ul>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                        <div style="height: 280px; background:rgba(0,0,0,0.2); border-radius: var(--radius-md); padding:1.25rem; border:1px solid var(--border-glass);">
+                            <h4 style="font-size:0.85rem; text-transform:uppercase; margin-bottom:12px; color:var(--text-muted); font-weight:700; letter-spacing:0.05em;">Market CAGR Projections</h4>
+                            <div style="height: 200px;"><canvas id="market-growth-chart"></canvas></div>
+                        </div>
+                        <div style="height: 280px; background:rgba(0,0,0,0.2); border-radius: var(--radius-md); padding:1.25rem; border:1px solid var(--border-glass);">
+                            <h4 style="font-size:0.85rem; text-transform:uppercase; margin-bottom:12px; color:var(--text-muted); font-weight:700; letter-spacing:0.05em;">TAM / SAM / SOM Segment Breakdown</h4>
+                            <div style="height: 200px;"><canvas id="market-segments-chart"></canvas></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Industry Trends -->
+                <section id="sec-trends" class="glass-panel report-section">
+                    <h2>Industry Trends</h2>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                        <div>
+                            <h3 style="font-size:1.15rem; color:var(--primary); margin-bottom:1rem;">Core Technology Directions</h3>
+                            <ul id="trends-tech-list" style="padding-left: 20px; display:flex; flex-direction:column; gap:10px;"></ul>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.15rem; color:var(--secondary); margin-bottom:1rem;">Consumer Behavior Adjustments</h3>
+                            <ul id="trends-consumer-list" style="padding-left: 20px; display:flex; flex-direction:column; gap:10px;"></ul>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; border-top: 1px solid var(--border-glass); padding-top: 1.5rem;">
+                        <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Strategic Outlook (5-Year Projection)</h3>
+                        <p id="trends-outlook" style="color:var(--text-secondary);"></p>
+                    </div>
+                </section>
+
+                <!-- 5. Customer Personas -->
+                <section id="sec-personas" class="glass-panel report-section">
+                    <h2>Customer Personas</h2>
+                    <div class="personas-slider" id="personas-container">
+                        <!-- Filled by JS -->
+                    </div>
+                </section>
+
+                <!-- 6. Competitor Landscape -->
+                <section id="sec-competitors" class="glass-panel report-section">
+                    <h2>Competitor Landscape</h2>
+                    <p id="competitor-intro" style="margin-bottom: 1.5rem;"></p>
+                    <div id="competitor-list-container" style="display:flex; flex-direction:column; gap:1.5rem;">
+                        <!-- Filled by JS -->
+                    </div>
+                    <div style="height: 320px; margin-top: 2rem; background:rgba(0,0,0,0.2); border-radius: var(--radius-md); padding:1.25rem; border:1px solid var(--border-glass);">
+                        <h4 style="font-size:0.85rem; text-transform:uppercase; margin-bottom:12px; color:var(--text-muted); font-weight:700; letter-spacing:0.05em;">Competitor Value Map (Pricing vs Quality)</h4>
+                        <div style="height: 240px;"><canvas id="competitor-positioning-chart"></canvas></div>
+                    </div>
+                    <div style="margin-top:2rem; border-top:1px solid var(--border-glass); padding-top:1.5rem;">
+                        <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--secondary);">Competitive Gap Analysis</h3>
+                        <p id="competitor-gap-txt" style="color: var(--text-secondary); margin-bottom:1.5rem;"></p>
+                        <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--secondary);">Opportunities to Differentiate</h3>
+                        <ul id="competitor-diff-list" style="padding-left: 20px;"></ul>
+                    </div>
+                </section>
+
+                <!-- 7. Product Strategy -->
+                <section id="sec-product" class="glass-panel report-section">
+                    <h2>Product Strategy</h2>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="glass-card">
+                            <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 0.75rem;">Core Features & MVP</h3>
+                            <ul id="prod-core-list" style="padding-left: 20px;"></ul>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="font-size: 1.1rem; color: var(--secondary); margin-bottom: 0.75rem;">Premium Offerings</h3>
+                            <ul id="prod-premium-list" style="padding-left: 20px;"></ul>
+                        </div>
+                    </div>
+                    <div class="glass-card" style="margin-bottom: 2rem;">
+                        <h3 style="font-size: 1.1rem; color: var(--accent); margin-bottom: 0.5rem;">Unique Selling Proposition (USP)</h3>
+                        <p id="prod-usp" style="font-weight: 600; color: var(--text-primary);"></p>
+                        <p id="prod-diff-txt" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px;"></p>
+                    </div>
+
+                    <h3 style="font-size:1.25rem; margin-bottom: 1rem; border-left: 3px solid var(--secondary); padding-left: 8px;">Development Roadmap</h3>
+                    <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                        <div style="display:grid; grid-template-columns:120px 1fr; gap:1rem; align-items:flex-start;">
+                            <div style="font-weight:800; color:var(--primary); font-size:1.1rem;">6 MONTHS</div>
+                            <div id="road-6mo" style="color:var(--text-secondary);"></div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:120px 1fr; gap:1rem; align-items:flex-start;">
+                            <div style="font-weight:800; color:var(--secondary); font-size:1.1rem;">12 MONTHS</div>
+                            <div id="road-12mo" style="color:var(--text-secondary);"></div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:120px 1fr; gap:1rem; align-items:flex-start;">
+                            <div style="font-weight:800; color:var(--accent); font-size:1.1rem;">24 MONTHS</div>
+                            <div id="road-24mo" style="color:var(--text-secondary);"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. Branding Strategy -->
+                <section id="sec-branding" class="glass-panel report-section">
+                    <h2>Branding Strategy</h2>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                        <div>
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Name Proposals</h3>
+                            <ul id="brand-names" style="padding-left: 20px;"></ul>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Tagline Proposals</h3>
+                            <ul id="brand-taglines" style="padding-left: 20px;"></ul>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; margin-bottom: 2rem;">
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; color:var(--primary); margin-bottom:0.5rem;">Brand Identity Story</h3>
+                            <p id="brand-story" style="font-size:0.9rem; color:var(--text-secondary); line-height:1.5;"></p>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; color:var(--secondary); margin-bottom:0.5rem;">Brand Matrix</h3>
+                            <p style="font-size:0.9rem; margin-bottom:6px;">Personality: <strong id="brand-personality">--</strong></p>
+                            <p style="font-size:0.9rem; margin-bottom:6px;">Archetype: <strong id="brand-archetype">--</strong></p>
+                            <p style="font-size:0.9rem;">Tone of Voice: <strong id="brand-tone">--</strong></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Color Palette & Style Guidelines</h3>
+                        <div style="display:flex; gap: 1rem; flex-wrap:wrap; margin-bottom: 1rem;" id="brand-colors-container">
+                            <!-- Filled by JS -->
+                        </div>
+                        <p id="brand-design-lang" style="font-size: 0.9rem; color: var(--text-secondary);"></p>
+                    </div>
+                </section>
+
+                <!-- 9. Marketing Channels -->
+                <section id="sec-marketing" class="glass-panel report-section">
+                    <h2>Marketing Channels</h2>
+                    <div style="height: 320px; margin-bottom: 2rem; background:rgba(0,0,0,0.2); border-radius: var(--radius-md); padding:1.25rem; border:1px solid var(--border-glass); display: flex; flex-direction: column; align-items: center;">
+                        <h4 style="font-size:0.85rem; text-transform:uppercase; margin-bottom:12px; color:var(--text-muted); font-weight:700; letter-spacing:0.05em; align-self: flex-start;">Marketing mix & Budget Allocation</h4>
+                        <div style="height: 240px; width: 100%; max-width: 400px;"><canvas id="marketing-budget-chart"></canvas></div>
+                    </div>
+                    <div id="marketing-channels-container" style="display:flex; flex-direction:column; gap:1.5rem;">
+                        <!-- Dynamic panels created by JS -->
+                    </div>
+                </section>
+
+                <!-- 10. Sales Strategy -->
+                <section id="sec-sales" class="glass-panel report-section">
+                    <h2>Sales Strategy</h2>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem;">Conversion Funnel Design</h3>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:2rem;" id="sales-funnel-container">
+                        <!-- Funnel bars styled elegantly -->
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; color:var(--primary); margin-bottom:0.5rem;">Lead Generation</h3>
+                            <p id="sales-leadgen" style="font-size:0.9rem; color:var(--text-secondary);"></p>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; color:var(--secondary); margin-bottom:0.5rem;">Conversion Optimization</h3>
+                            <p id="sales-conversion" style="font-size:0.9rem; color:var(--text-secondary);"></p>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap: 1.5rem;">
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; color:var(--accent); margin-bottom:0.5rem;">Retention & Customer Success</h3>
+                            <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:8px;" id="sales-retention"></p>
+                            <p style="font-size:0.9rem; color:var(--text-secondary);" id="sales-success"></p>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; margin-bottom:0.5rem;">Sales Performance KPIs</h3>
+                            <ul id="sales-kpis" style="padding-left:20px; font-size:0.9rem;"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11. Operational Strategy -->
+                <section id="sec-operations" class="glass-panel report-section">
+                    <h2>Operational Strategy</h2>
+                    <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; margin-bottom: 2rem;">
+                        <div>
+                            <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Operational Framework</h3>
+                            <p id="ops-structure" style="color: var(--text-secondary); margin-bottom:1.5rem;"></p>
+                            <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Hiring Plan Schedule</h3>
+                            <ul id="ops-hiring" style="padding-left: 20px;"></ul>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color:var(--secondary);">Core Automation Tasks</h3>
+                            <ul id="ops-automations" style="padding-left: 20px; font-size:0.9rem;"></ul>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="glass-card">
+                            <h3 style="font-size: 1.1rem; color:var(--primary); margin-bottom: 0.5rem;">Technology Stack</h3>
+                            <div style="display:flex; flex-wrap:wrap; gap:8px;" id="ops-techstack"></div>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Vendor & Supply Strategy</h3>
+                            <p id="ops-vendors" style="font-size:0.9rem; color:var(--text-secondary);"></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 12. Financial Planning -->
+                <section id="sec-financials" class="glass-panel report-section">
+                    <h2>Financial Planning</h2>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Initial Startup Allocations</h3>
+                    <table id="table-startup-costs">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Allocation Budget</th>
+                                <th>% of Capital</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filled dynamically by JS -->
+                        </tbody>
+                    </table>
+                    <div style="height: 250px; margin-top: 1.5rem; background:rgba(0,0,0,0.2); border-radius: var(--radius-md); padding:1rem; border:1px solid var(--border-glass);">
+                        <canvas id="startup-costs-chart"></canvas>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                        <div>
+                            <h3 style="font-size:1.15rem; margin-bottom:0.5rem; color:var(--warning);">Recurring Overheads</h3>
+                            <p style="font-size:1rem; margin-bottom:6px;">Monthly Expenses: <strong id="cost-monthly">--</strong></p>
+                            <p style="font-size:1rem; margin-bottom:6px;">Quarterly Expenses: <strong id="cost-quarterly">--</strong></p>
+                            <p style="font-size:1rem;">Annual Operating Overhead: <strong id="cost-yearly">--</strong></p>
+                        </div>
+                        <div class="glass-card" style="border-color: rgba(245, 158, 11, 0.15);">
+                            <h3 style="font-size:1.15rem; margin-bottom:0.5rem; color:var(--warning);">Break-Even Analysis</h3>
+                            <p style="font-size:0.9rem; margin-bottom:8px; line-height:1.4;" id="break-even-explanation"></p>
+                            <p style="font-size:1rem; font-weight:700;">Break-even Target: <span id="break-even-val" style="color:var(--warning);">--</span></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 13. Projections & Charts -->
+                <section id="sec-forecast" class="glass-panel report-section">
+                    <h2>Projections & Charts</h2>
+                    <div style="height: 320px; margin-bottom: 2.5rem; background:rgba(0,0,0,0.2); border-radius: var(--radius-md); padding:1rem; border:1px solid var(--border-glass);">
+                        <canvas id="financial-projection-chart"></canvas>
+                    </div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">3-Year Financial Forecasts</h3>
+                    <table id="table-forecasts">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Projected Revenue</th>
+                                <th>Projected Expenses</th>
+                                <th>Net Margin Profit</th>
+                                <th>Estimated Cash Flow</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- 14. Risk Assessment -->
+                <section id="sec-risks" class="glass-panel report-section">
+                    <h2>Risk Assessment</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Corporate risk matrix mapping and corresponding mitigation designs.</p>
+                    <div style="height: 320px; margin-bottom: 2rem; background:rgba(0,0,0,0.2); border-radius: var(--radius-md); padding:1.25rem; border:1px solid var(--border-glass);">
+                        <h4 style="font-size:0.85rem; text-transform:uppercase; margin-bottom:12px; color:var(--text-muted); font-weight:700; letter-spacing:0.05em;">Risk Heatmap (Likelihood vs Impact)</h4>
+                        <div style="height: 240px;"><canvas id="risks-matrix-chart"></canvas></div>
+                    </div>
+                    <div id="risks-matrix-container">
+                        <!-- Filled by JS -->
+                    </div>
+                </section>
+
+                <!-- 15. SWOT Analysis -->
+                <section id="sec-swot" class="glass-panel report-section">
+                    <h2>SWOT Analysis</h2>
+                    <div class="swot-grid" style="margin-bottom: 2rem;">
+                        <div class="swot-box s">
+                            <h3><span>S</span> Strengths</h3>
+                            <ul id="swot-s" class="swot-list"></ul>
+                        </div>
+                        <div class="swot-box w">
+                            <h3><span>W</span> Weaknesses</h3>
+                            <ul id="swot-w" class="swot-list"></ul>
+                        </div>
+                        <div class="swot-box o">
+                            <h3><span>O</span> Opportunities</h3>
+                            <ul id="swot-o" class="swot-list"></ul>
+                        </div>
+                        <div class="swot-box t">
+                            <h3><span>T</span> Threats</h3>
+                            <ul id="swot-t" class="swot-list"></ul>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color:var(--primary);">SWOT Strategic Recommendations</h3>
+                        <ul id="swot-recommendations-list" style="padding-left: 20px;"></ul>
+                    </div>
+                </section>
+
+                <!-- 16. Growth Roadmap -->
+                <section id="sec-growth" class="glass-panel report-section">
+                    <h2>Growth Roadmap</h2>
+                    <div style="display:flex; flex-direction:column; gap:1.5rem; margin-bottom: 2rem;">
+                        <div style="display:grid; grid-template-columns:120px 1fr; gap:1rem; align-items:flex-start;">
+                            <div style="font-weight:800; color:var(--secondary); font-size:1.1rem;">90 DAYS</div>
+                            <div id="growth-90d" style="color:var(--text-secondary);"></div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:120px 1fr; gap:1rem; align-items:flex-start;">
+                            <div style="font-weight:800; color:var(--primary); font-size:1.1rem;">6 MONTHS</div>
+                            <div id="growth-6mo" style="color:var(--text-secondary);"></div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:120px 1fr; gap:1rem; align-items:flex-start;">
+                            <div style="font-weight:800; color:var(--accent); font-size:1.1rem;">1 YEAR</div>
+                            <div id="growth-1yr" style="color:var(--text-secondary);"></div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:120px 1fr; gap:1rem; align-items:flex-start;">
+                            <div style="font-weight:800; color:var(--success); font-size:1.1rem;">3 YEARS</div>
+                            <div id="growth-3yr" style="color:var(--text-secondary);"></div>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; color:var(--secondary); margin-bottom:0.5rem;">Scaling Engine & Viral Loops</h3>
+                            <p id="growth-scaling-strategy" style="font-size:0.9rem; color:var(--text-secondary);"></p>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; margin-bottom:0.5rem;">Partnership & Acquisition Targets</h3>
+                            <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:8px;" id="growth-partnerships"></p>
+                            <p style="font-size:0.9rem; color:var(--text-secondary);" id="growth-acquisitions"></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 17. Investor Readiness -->
+                <section id="sec-investors" class="glass-panel report-section">
+                    <h2>Investor Readiness</h2>
+                    <div class="metric-grid" style="margin-bottom: 2rem;">
+                        <div class="metric-card">
+                            <div class="metric-val" id="score-readiness">0</div>
+                            <div class="metric-label">Investment Readiness Score</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-val" id="score-attractiveness">0</div>
+                            <div class="metric-label">Investor Attractiveness Score</div>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:2rem; margin-bottom: 2rem;">
+                        <div>
+                            <h3 style="font-size: 1.15rem; color: var(--primary); margin-bottom: 0.5rem;">Qualitative Evaluation</h3>
+                            <div id="investor-evals" style="display:flex; flex-direction:column; gap:10px; font-size:0.9rem; color:var(--text-secondary);"></div>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Funding Structuring</h3>
+                            <p style="font-size:0.9rem; margin-bottom:12px;">Recommended Stages: <br><strong id="investor-stages" style="color:var(--secondary);">--</strong></p>
+                            <p style="font-size:0.9rem;">Target Investor Types: <br><strong id="investor-types" style="color:var(--secondary);">--</strong></p>
+                        </div>
+                    </div>
+                    <div style="height: 250px; margin-top: 1.5rem; background:rgba(0,0,0,0.2); border-radius: var(--radius-md); padding:1rem; border:1px solid var(--border-glass);">
+                        <canvas id="investor-readiness-chart"></canvas>
+                    </div>
+                </section>
+
+                <!-- 18. Recommendations -->
+                <section id="sec-recommendations" class="glass-panel report-section">
+                    <h2>Strategic Recommendations</h2>
+                    <ul id="recs-list" style="padding-left: 20px; font-size: 1.05rem; display:flex; flex-direction:column; gap:12px;"></ul>
+                </section>
+
+                <!-- 19. Immediate Action Plan -->
+                <section id="sec-action" class="glass-panel report-section">
+                    <h2>Immediate Action Plan</h2>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1rem;" id="action-plan-container">
+                        <!-- Filled by JS -->
+                    </div>
+                </section>
+
+                <!-- 20. Strategic Conclusion -->
+                <section id="sec-conclusion" class="glass-panel report-section">
+                    <h2>Strategic Conclusion</h2>
+                    <div id="content-conclusion" style="font-size: 1.1rem; line-height: 1.7; font-family: 'Playfair Display', serif; color: var(--text-primary);"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="js/report-viewer.js?v=2"></script>
+</body>
+</html>

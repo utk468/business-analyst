@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Strategy</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <div class="logo-text">Business Strategy</div>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-btn secondary">New Strategy</a>
+            <a href="history.html" class="nav-btn primary">Past Strategies</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div style="margin-bottom: 2rem;">
+            <h1>Strategic Vault</h1>
+            <p style="color: var(--text-secondary);">Browse, retrieve, and manage your compiled 15-agent consulting strategies.</p>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 2.5rem; align-items: center;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Storage Node:</span>
+            <div id="badge-db" class="status-badge local">Connecting Database...</div>
+        </div>
+
+        <!-- History Grid -->
+        <div class="history-grid" id="history-container">
+            <!-- Loading State -->
+            <div style="grid-column: 1/-1; text-align: center; padding: 4rem 0;" id="loading-state">
+                <div class="spinner" style="margin: 0 auto 1rem auto; width: 40px; height: 40px; border-width: 4px; border-top-color: var(--primary);"></div>
+                <p style="color: var(--text-muted);">Retrieving compiled profiles...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Inline code for history view specifically, or delegated to app.js. 
+        // We will write the handlers in app.js, and load app.js below.
+    </script>
+    <script type="module" src="js/history.js"></script>
+</body>
+</html>
