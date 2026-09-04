@@ -1,28 +1,35 @@
-import { fetchReport } from './api.js';
+import { fetchReport } from './api.js?v=5';
 import {
     escapeHtml,
     formatNumber,
     formatTextHtml,
     renderBulletList,
-    renderRoadmapMilestones
-} from './utils.js';
+    renderRoadmapMilestones,
+    getCountryCurrency,
+    formatCurrency,
+    formatCompactCurrency
+} from './utils.js?v=5';
 
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Extract report ID from URL
+function initReportViewer() {
     const urlParams = new URLSearchParams(window.location.search);
     const reportId = urlParams.get("id");
 
     if (!reportId) {
-        displayError("No Report ID provided. Please visit the Vault to open a strategy.");
+        displayError("No Report ID provided in URL. Please open a strategy from Past Strategies.");
         return;
     }
 
-    // 2. Fetch and render report details
     fetchReportDetails(reportId);
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initReportViewer);
+} else {
+    initReportViewer();
+}
 
 
 
@@ -44,19 +51,36 @@ function displayError(msg) {
 
 
 function fetchReportDetails(id) {
-    fetchReport(id)
+    const loadingEl = document.getElementById("report-loading");
+    const layoutEl = document.getElementById("report-main-layout");
+
+    // Add safety timeout so user is never permanently stuck on the loading spinner
+    const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Report loading timed out. Check your connection or verify report ID in Vault.")), 12000);
+    });
+
+    Promise.race([fetchReport(id), timeoutPromise])
         .then(report => {
-            document.getElementById("report-loading").style.display = "none";
-            document.getElementById("report-main-layout").style.display = "grid";
+            if (loadingEl) loadingEl.style.display = "none";
+            if (layoutEl) layoutEl.style.display = "grid";
 
             document.title = `Business Strategy | Blueprint - ${report.metadata?.startup_idea?.substring(0, 25) || "Strategy"}`;
 
-            renderReport(report);
-            setupScrollSpy();
+            try {
+                renderReport(report);
+            } catch (err) {
+                console.error("Non-fatal error rendering strategy report:", err);
+            }
+
+            try {
+                setupScrollSpy();
+            } catch (e) {
+                console.warn("Scrollspy setup error:", e);
+            }
         })
         .catch(err => {
             console.error("Failed to retrieve strategy details:", err);
-            displayError(err.message);
+            displayError(err.message || "Unable to load strategic intelligence report.");
         });
 }
 
@@ -343,6 +367,8 @@ function renderReport(r) {
         techContainer.appendChild(badge);
     });
 
+    const countryName = meta.country || "Global";
+
     // 12. Financial Planning
     const costTable = document.getElementById("table-startup-costs").querySelector("tbody");
     costTable.innerHTML = "";
@@ -356,29 +382,29 @@ function renderReport(r) {
         const pct = totalStartup > 0 ? ((val / totalStartup) * 100).toFixed(1) : 0;
         row.innerHTML = `
             <td style="text-transform:capitalize;">${escapeHtml(k.replace("_", " "))}</td>
-            <td><strong>$${formatNumber(val)}</strong></td>
+            <td><strong>${formatCurrency(val, countryName)}</strong></td>
             <td style="color:var(--text-muted); font-size:0.85rem;">${pct}%</td>
         `;
         costTable.appendChild(row);
     });
 
     const totalRow = document.createElement("tr");
-    totalRow.style.borderTop = "2px solid var(--border-glass)";
-    totalRow.style.background = "rgba(255,255,255,0.03)";
+    totalRow.style.borderTop = "2px solid var(--border-default)";
+    totalRow.style.background = "var(--aqua-50)";
     totalRow.innerHTML = `
-        <td><strong>Total Initial Capital required</strong></td>
-        <td colspan="2"><strong style="color:var(--secondary); font-size:1.1rem;">$${formatNumber(totalStartup)}</strong></td>
+        <td><strong>Total Initial Capital Required</strong></td>
+        <td colspan="2"><strong style="color:var(--primary-dark); font-size:1.1rem;">${formatCurrency(totalStartup, countryName)}</strong></td>
     `;
     costTable.appendChild(totalRow);
 
     const rec = fin.recurring_expenses || {};
-    document.getElementById("cost-monthly").textContent = `$${formatNumber(rec.monthly)} / mo`;
-    document.getElementById("cost-quarterly").textContent = `$${formatNumber(rec.quarterly)} / qtr`;
-    document.getElementById("cost-yearly").textContent = `$${formatNumber(rec.yearly)} / yr`;
+    document.getElementById("cost-monthly").textContent = `${formatCurrency(rec.monthly, countryName)} / mo`;
+    document.getElementById("cost-quarterly").textContent = `${formatCurrency(rec.quarterly, countryName)} / qtr`;
+    document.getElementById("cost-yearly").textContent = `${formatCurrency(rec.yearly, countryName)} / yr`;
 
     const be = fin.break_even || {};
     document.getElementById("break-even-explanation").textContent = be.explanation || "";
-    document.getElementById("break-even-val").textContent = typeof be.units_or_revenue === "number" ? `$${formatNumber(be.units_or_revenue)}` : be.units_or_revenue;
+    document.getElementById("break-even-val").textContent = typeof be.units_or_revenue === "number" ? formatCurrency(be.units_or_revenue, countryName) : be.units_or_revenue;
 
     // 13. Projections & Charts
     const forecastTable = document.getElementById("table-forecasts").querySelector("tbody");
@@ -398,16 +424,16 @@ function renderReport(r) {
 
         row.innerHTML = `
             <td>Year ${idx + 1} Projections</td>
-            <td style="color:var(--secondary);"><strong>$${formatNumber(revenue)}</strong></td>
-            <td style="color:var(--text-secondary);">$${formatNumber(expenses)}</td>
-            <td style="color:var(--success); font-weight:700;">$${formatNumber(profit)}</td>
-            <td>$${formatNumber(cash)}</td>
+            <td style="color:var(--primary);"><strong>${formatCurrency(revenue, countryName)}</strong></td>
+            <td style="color:var(--text-secondary);">${formatCurrency(expenses, countryName)}</td>
+            <td style="color:var(--success); font-weight:700;">${formatCurrency(profit, countryName)}</td>
+            <td>${formatCurrency(cash, countryName)}</td>
         `;
         forecastTable.appendChild(row);
     });
-    renderForecastChart(rev, prof);
-    renderMarketGrowthChart(market.market_size, market.estimated_growth);
-    renderMarketSegmentsChart(market.tam_sam_som);
+    renderForecastChart(rev, prof, countryName);
+    renderMarketGrowthChart(market.market_size, market.estimated_growth, countryName);
+    renderMarketSegmentsChart(market.tam_sam_som, countryName);
     renderStartupCostsChart(fin.startup_costs);
     renderCompetitorPositioningChart(comp.competitors);
     renderMarketingBudgetChart(mkt);
@@ -509,484 +535,579 @@ function renderReport(r) {
     document.getElementById("content-conclusion").innerHTML = formatTextHtml(r.conclusion);
 }
 
-function renderForecastChart(revenue, profit) {
-    const ctx = document.getElementById("financial-projection-chart").getContext("2d");
+function renderForecastChart(revenue, profit, countryName = "Global") {
+    try {
+        const canvas = document.getElementById("financial-projection-chart");
+        if (!canvas) return;
+        const existing = Chart.getChart(canvas);
+        if (existing) existing.destroy();
+        const ctx = canvas.getContext("2d");
 
-    const y1Rev = revenue.year_1 || 0;
-    const y2Rev = revenue.year_2 || 0;
-    const y3Rev = revenue.year_3 || 0;
+        const y1Rev = revenue.year_1 || 0;
+        const y2Rev = revenue.year_2 || 0;
+        const y3Rev = revenue.year_3 || 0;
 
-    const y1Prof = profit.year_1 || 0;
-    const y2Prof = profit.year_2 || 0;
-    const y3Prof = profit.year_3 || 0;
+        const y1Prof = profit.year_1 || 0;
+        const y2Prof = profit.year_2 || 0;
+        const y3Prof = profit.year_3 || 0;
 
-    const expenses = [
-        y1Rev - y1Prof,
-        y2Rev - y2Prof,
-        y3Rev - y3Prof
-    ];
+        const expenses = [
+            y1Rev - y1Prof,
+            y2Rev - y2Prof,
+            y3Rev - y3Prof
+        ];
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Year 1', 'Year 2', 'Year 3'],
-            datasets: [
-                {
-                    label: 'Gross Revenue',
-                    data: [y1Rev, y2Rev, y3Rev],
-                    borderColor: '#06b6d4',
-                    backgroundColor: 'rgba(6, 182, 212, 0.1)',
-                    fill: true,
-                    tension: 0.2,
-                    borderWidth: 3
-                },
-                {
-                    label: 'Net Profits',
-                    data: [y1Prof, y2Prof, y3Prof],
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
-                    fill: true,
-                    tension: 0.2,
-                    borderWidth: 3
-                },
-                {
-                    label: 'Calculated Expenses',
-                    data: expenses,
-                    borderColor: '#6366f1',
-                    borderDash: [5, 5],
-                    fill: false,
-                    tension: 0.2,
-                    borderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans' } }
-                }
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Year 1', 'Year 2', 'Year 3'],
+                datasets: [
+                    {
+                        label: 'Gross Revenue',
+                        data: [y1Rev, y2Rev, y3Rev],
+                        borderColor: '#0891b2',
+                        backgroundColor: 'rgba(8, 145, 178, 0.12)',
+                        fill: true,
+                        tension: 0.25,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#0891b2'
+                    },
+                    {
+                        label: 'Net Profits',
+                        data: [y1Prof, y2Prof, y3Prof],
+                        borderColor: '#059669',
+                        backgroundColor: 'rgba(5, 150, 105, 0.08)',
+                        fill: true,
+                        tension: 0.25,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#059669'
+                    },
+                    {
+                        label: 'Calculated Expenses',
+                        data: expenses,
+                        borderColor: '#6366f1',
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.25,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#6366f1'
+                    }
+                ]
             },
-            scales: {
-                x: {
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { color: '#94a3b8' }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#0f172a', font: { family: 'Plus Jakarta Sans', weight: 600 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return `${context.dataset.label}: ${formatCurrency(context.raw, countryName)}`;
+                            }
+                        }
+                    }
                 },
-                y: {
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: {
-                        color: '#94a3b8',
-                        callback: function (value) {
-                            return '$' + value.toLocaleString();
+                scales: {
+                    x: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans' } }
+                    },
+                    y: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            color: '#64748b',
+                            font: { family: 'Plus Jakarta Sans' },
+                            callback: function (value) {
+                                return formatCompactCurrency(value, countryName);
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.warn("Forecast chart render skipped:", e);
+    }
 }
 
-function renderMarketGrowthChart(marketSizeStr, cagrStr) {
-    const ctx = document.getElementById("market-growth-chart").getContext("2d");
+function renderMarketGrowthChart(marketSizeStr, cagrStr, countryName = "Global") {
+    try {
+        const canvas = document.getElementById("market-growth-chart");
+        if (!canvas) return;
+        const existing = Chart.getChart(canvas);
+        if (existing) existing.destroy();
+        const ctx = canvas.getContext("2d");
+        const curr = getCountryCurrency(countryName);
 
-    // Parse TAM String values
-    function parseAmount(str) {
-        if (!str) return 100000000;
-        const clean = str.replace(/[^0-9.]/g, '');
-        let num = parseFloat(clean);
-        if (isNaN(num)) num = 100;
-        const lower = str.toLowerCase();
-        if (lower.includes("billion") || lower.includes("b")) {
-            return num * 1000000000;
-        } else if (lower.includes("million") || lower.includes("m")) {
-            return num * 1000000;
+        function parseAmount(str) {
+            if (!str) return 100000000 * curr.rate;
+            const clean = str.replace(/[^0-9.]/g, '');
+            let num = parseFloat(clean);
+            if (isNaN(num)) num = 100 * curr.rate;
+            const lower = str.toLowerCase();
+            if (lower.includes("crore") || lower.includes("cr")) {
+                return num * 10000000;
+            } else if (lower.includes("lakh") || lower.includes("lac") || lower.includes("l")) {
+                return num * 100000;
+            } else if (lower.includes("billion") || lower.includes("b")) {
+                return num * 1000000000;
+            } else if (lower.includes("million") || lower.includes("m")) {
+                return num * 1000000;
+            }
+            return num;
         }
-        return num;
-    }
 
-    function parsePct(str) {
-        if (!str) return 0.10;
-        const clean = str.replace(/[^0-9.]/g, '');
-        let num = parseFloat(clean);
-        if (isNaN(num)) return 0.10;
-        return num / 100;
-    }
+        function parsePct(str) {
+            if (!str) return 0.10;
+            const clean = str.replace(/[^0-9.]/g, '');
+            let num = parseFloat(clean);
+            if (isNaN(num)) return 0.10;
+            return num / 100;
+        }
 
-    const baseAmount = parseAmount(marketSizeStr);
-    const growthRate = parsePct(cagrStr);
+        const baseAmount = parseAmount(marketSizeStr);
+        const growthRate = parsePct(cagrStr);
 
-    const years = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'];
-    const projectionData = [baseAmount];
-    for (let i = 1; i < 5; i++) {
-        projectionData.push(Math.round(projectionData[i - 1] * (1 + growthRate)));
-    }
+        const years = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'];
+        const projectionData = [baseAmount];
+        for (let i = 1; i < 5; i++) {
+            projectionData.push(Math.round(projectionData[i - 1] * (1 + growthRate)));
+        }
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: years,
-            datasets: [{
-                label: 'Projected Addressable Market (TAM)',
-                data: projectionData,
-                backgroundColor: 'rgba(6, 182, 212, 0.4)',
-                borderColor: '#06b6d4',
-                borderWidth: 2,
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { labels: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans' } } }
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [{
+                    label: `Projected Addressable Market (${curr.code})`,
+                    data: projectionData,
+                    backgroundColor: 'rgba(6, 182, 212, 0.75)',
+                    borderColor: '#0891b2',
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
             },
-            scales: {
-                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
-                y: {
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: {
-                        color: '#94a3b8',
-                        callback: function (value) {
-                            if (value >= 1000000000) return '$' + (value / 1000000000).toFixed(1) + 'B';
-                            if (value >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
-                            return '$' + value.toLocaleString();
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#0f172a', font: { family: 'Plus Jakarta Sans', weight: 600 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return `TAM: ${formatCurrency(context.raw, countryName)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans' } } },
+                    y: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            color: '#64748b',
+                            font: { family: 'Plus Jakarta Sans' },
+                            callback: function (value) {
+                                return formatCompactCurrency(value, countryName);
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.warn("Market growth chart render skipped:", e);
+    }
 }
 
 function renderStartupCostsChart(costsObj) {
-    const ctx = document.getElementById("startup-costs-chart").getContext("2d");
-    if (!costsObj) costsObj = {};
+    try {
+        const canvas = document.getElementById("startup-costs-chart");
+        if (!canvas) return;
+        const existing = Chart.getChart(canvas);
+        if (existing) existing.destroy();
+        const ctx = canvas.getContext("2d");
+        if (!costsObj) costsObj = {};
 
-    const labels = Object.keys(costsObj).map(k => k.replace("_", " ").toUpperCase());
-    const data = Object.values(costsObj);
+        const labels = Object.keys(costsObj).map(k => k.replace("_", " ").toUpperCase());
+        const data = Object.values(costsObj);
 
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: [
-                    '#6366f1', // Indigo
-                    '#06b6d4', // Teal
-                    '#d946ef', // Fuchsia
-                    '#f59e0b', // Warning/Amber
-                    '#10b981', // Success/Green
-                    '#fb7185', // Rose
-                    '#64748b'  // Muted Gray
-                ],
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.1)'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans', size: 10 } }
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#0891b2', // Aqua 600
+                        '#0284c7', // Sky 600
+                        '#0d9488', // Teal 600
+                        '#6366f1', // Indigo 500
+                        '#10b981', // Emerald 500
+                        '#f59e0b', // Amber 500
+                        '#f43f5e'  // Rose 500
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#0f172a', font: { family: 'Plus Jakarta Sans', size: 10, weight: 600 } }
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.warn("Startup costs chart render skipped:", e);
+    }
 }
 
 function renderInvestorReadinessChart(readinessScore, attractivenessScore) {
-    const ctx = document.getElementById("investor-readiness-chart").getContext("2d");
+    try {
+        const canvas = document.getElementById("investor-readiness-chart");
+        if (!canvas) return;
+        const existing = Chart.getChart(canvas);
+        if (existing) existing.destroy();
+        const ctx = canvas.getContext("2d");
 
-    const readVal = readinessScore || 75;
-    const attrVal = attractivenessScore || 80;
+        const readVal = readinessScore || 75;
+        const attrVal = attractivenessScore || 80;
 
-    // Generate programmatic scores for radar axes based on calculated scores
-    const labels = ['MarketTAM Capacity', 'Moat Moat Moat', 'Scalability', 'Revenue Track', 'Team Capability', 'Funding Appeal'];
-    const scoreData = [
-        Math.min(100, Math.round(attrVal * 1.08)), // Market TAM Capacity
-        Math.min(100, Math.round(readVal * 0.95)), // Moat strength
-        Math.min(100, Math.round(readVal * 1.05)), // Scalability
-        Math.min(100, Math.round(attrVal * 0.98)), // Revenue predictability
-        Math.min(100, Math.round(readVal * 0.92)), // Team structure
-        Math.min(100, attrVal)                     // Overall Funding Appeal
-    ];
+        const labels = ['Market TAM Capacity', 'Moat Moat Moat', 'Scalability', 'Revenue Track', 'Team Capability', 'Funding Appeal'];
+        const scoreData = [
+            Math.min(100, Math.round(attrVal * 1.08)),
+            Math.min(100, Math.round(readVal * 0.95)),
+            Math.min(100, Math.round(readVal * 1.05)),
+            Math.min(100, Math.round(attrVal * 0.98)),
+            Math.min(100, Math.round(readVal * 0.92)),
+            Math.min(100, attrVal)
+        ];
 
-    new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Startup Audit Vectors',
-                data: scoreData,
-                backgroundColor: 'rgba(217, 70, 239, 0.1)',
-                borderColor: '#d946ef',
-                borderWidth: 2,
-                pointBackgroundColor: '#d946ef'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { labels: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans' } } }
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Startup Audit Vectors',
+                    data: scoreData,
+                    backgroundColor: 'rgba(6, 182, 212, 0.2)',
+                    borderColor: '#0891b2',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#0891b2',
+                    pointBorderColor: '#ffffff',
+                    pointHoverBackgroundColor: '#ffffff',
+                    pointHoverBorderColor: '#0891b2'
+                }]
             },
-            scales: {
-                r: {
-                    angleLines: { color: 'rgba(255,255,255,0.08)' },
-                    gridLines: { color: 'rgba(255,255,255,0.08)' },
-                    pointLabels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 10 } },
-                    ticks: { backdropColor: 'transparent', color: '#64748b', showLabelBackdrop: false },
-                    suggestedMin: 0,
-                    suggestedMax: 100
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#0f172a', font: { family: 'Plus Jakarta Sans', weight: 600 } } }
+                },
+                scales: {
+                    r: {
+                        angleLines: { color: '#e2e8f0' },
+                        grid: { color: '#e2e8f0' },
+                        pointLabels: { color: '#475569', font: { family: 'Plus Jakarta Sans', size: 10, weight: 600 } },
+                        ticks: { backdropColor: 'transparent', color: '#94a3b8', showLabelBackdrop: false },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.warn("Investor readiness chart render skipped:", e);
+    }
 }
 
-function renderMarketSegmentsChart(tamSamSomObj) {
-    const ctx = document.getElementById("market-segments-chart").getContext("2d");
-    if (!tamSamSomObj) tamSamSomObj = { tam: 1000000000, sam: 100000000, som: 10000000 };
+function renderMarketSegmentsChart(tamSamSomObj, countryName = "Global") {
+    try {
+        const canvas = document.getElementById("market-segments-chart");
+        if (!canvas) return;
+        const existing = Chart.getChart(canvas);
+        if (existing) existing.destroy();
+        const ctx = canvas.getContext("2d");
+        const curr = getCountryCurrency(countryName);
+        if (!tamSamSomObj) tamSamSomObj = { tam: 1000000000 * curr.rate, sam: 100000000 * curr.rate, som: 10000000 * curr.rate };
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['TAM', 'SAM', 'SOM'],
-            datasets: [{
-                label: 'Market Size ($)',
-                data: [tamSamSomObj.tam || 0, tamSamSomObj.sam || 0, tamSamSomObj.som || 0],
-                backgroundColor: [
-                    'rgba(99, 102, 241, 0.5)',  // Indigo
-                    'rgba(6, 182, 212, 0.5)',   // Teal
-                    'rgba(16, 185, 129, 0.5)'   // Emerald
-                ],
-                borderColor: [
-                    '#6366f1',
-                    '#06b6d4',
-                    '#10b981'
-                ],
-                borderWidth: 2,
-                borderRadius: 4
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['TAM', 'SAM', 'SOM'],
+                datasets: [{
+                    label: `Market Size (${curr.code})`,
+                    data: [tamSamSomObj.tam || 0, tamSamSomObj.sam || 0, tamSamSomObj.som || 0],
+                    backgroundColor: [
+                        'rgba(8, 145, 178, 0.8)',
+                        'rgba(2, 132, 199, 0.8)',
+                        'rgba(16, 185, 129, 0.8)'
+                    ],
+                    borderColor: [
+                        '#0891b2',
+                        '#0284c7',
+                        '#10b981'
+                    ],
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
             },
-            scales: {
-                x: {
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: {
-                        color: '#94a3b8',
-                        callback: function (value) {
-                            if (value >= 1000000000) return '$' + (value / 1000000000).toFixed(1) + 'B';
-                            if (value >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
-                            return '$' + value.toLocaleString();
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return `${context.label}: ${formatCurrency(context.raw, countryName)}`;
+                            }
                         }
                     }
                 },
-                y: {
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8' }
+                scales: {
+                    x: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            color: '#64748b',
+                            font: { family: 'Plus Jakarta Sans' },
+                            callback: function (value) {
+                                return formatCompactCurrency(value, countryName);
+                            }
+                        }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#0f172a', font: { family: 'Plus Jakarta Sans', weight: 600 } }
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.warn("Market segments chart render skipped:", e);
+    }
 }
 
 function renderCompetitorPositioningChart(competitorsList) {
-    const ctx = document.getElementById("competitor-positioning-chart").getContext("2d");
-    if (!competitorsList || competitorsList.length === 0) return;
+    try {
+        const canvas = document.getElementById("competitor-positioning-chart");
+        if (!canvas) return;
+        const existing = Chart.getChart(canvas);
+        if (existing) existing.destroy();
+        const ctx = canvas.getContext("2d");
+        if (!competitorsList || competitorsList.length === 0) return;
 
-    const datasets = competitorsList.map((c, i) => {
-        const colors = ['#6366f1', '#06b6d4', '#d946ef', '#10b981', '#f59e0b', '#fb7185'];
-        const color = colors[i % colors.length];
-        return {
-            label: c.name,
-            data: [{
-                x: c.pricing_level || 5,
-                y: c.quality_score || 5,
-                r: Math.max(6, Math.min(25, (c.market_share_percent || 10) * 0.4))
-            }],
-            backgroundColor: color + '80',
-            borderColor: color,
-            borderWidth: 2,
-            hoverRadius: 10
-        };
-    });
+        const datasets = competitorsList.map((c, i) => {
+            const colors = ['#0891b2', '#0284c7', '#0d9488', '#6366f1', '#f59e0b', '#10b981'];
+            const color = colors[i % colors.length];
+            return {
+                label: c.name,
+                data: [{
+                    x: c.pricing_level || 5,
+                    y: c.quality_score || 5,
+                    r: Math.max(6, Math.min(25, (c.market_share_percent || 10) * 0.4))
+                }],
+                backgroundColor: color + '90',
+                borderColor: color,
+                borderWidth: 2,
+                hoverRadius: 10
+            };
+        });
 
-    new Chart(ctx, {
-        type: 'bubble',
-        data: { datasets: datasets },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans', size: 9 } }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            const dataset = context.dataset;
-                            const dataPoint = dataset.data[context.dataIndex];
-                            return `${dataset.label} (Pricing: ${dataPoint.x}/10, Quality: ${dataPoint.y}/10, Share: ${Math.round(dataPoint.r / 0.4)}%)`;
+        new Chart(ctx, {
+            type: 'bubble',
+            data: { datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#0f172a', font: { family: 'Plus Jakarta Sans', size: 9, weight: 600 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const dataset = context.dataset;
+                                const dataPoint = dataset.data[context.dataIndex];
+                                return `${dataset.label} (Pricing: ${dataPoint.x}/10, Quality: ${dataPoint.y}/10, Share: ${Math.round(dataPoint.r / 0.4)}%)`;
+                            }
                         }
                     }
-                }
-            },
-            scales: {
-                x: {
-                    title: { display: true, text: 'Pricing Level (1=Low, 10=High)', color: '#94a3b8' },
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { color: '#94a3b8' },
-                    min: 0,
-                    max: 11
                 },
-                y: {
-                    title: { display: true, text: 'Product Quality / Value (1=Low, 10=High)', color: '#94a3b8' },
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { color: '#94a3b8' },
-                    min: 0,
-                    max: 11
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Pricing Level (1=Low, 10=High)', color: '#475569', font: { weight: 600 } },
+                        grid: { color: '#f1f5f9' },
+                        ticks: { color: '#64748b' },
+                        min: 0,
+                        max: 11
+                    },
+                    y: {
+                        title: { display: true, text: 'Product Quality / Value (1=Low, 10=High)', color: '#475569', font: { weight: 600 } },
+                        grid: { color: '#f1f5f9' },
+                        ticks: { color: '#64748b' },
+                        min: 0,
+                        max: 11
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.warn("Competitor positioning chart render skipped:", e);
+    }
 }
 
 function renderMarketingBudgetChart(marketingObj) {
-    const ctx = document.getElementById("marketing-budget-chart").getContext("2d");
-    if (!marketingObj) return;
+    try {
+        const canvas = document.getElementById("marketing-budget-chart");
+        if (!canvas) return;
+        const existing = Chart.getChart(canvas);
+        if (existing) existing.destroy();
+        const ctx = canvas.getContext("2d");
+        if (!marketingObj) return;
 
-    const labels = [];
-    const data = [];
+        const labels = [];
+        const data = [];
 
-    const mktKeys = ["organic", "content", "seo", "email", "influencer", "community", "referral", "pr"];
-    mktKeys.forEach(k => {
-        if (marketingObj[k] && typeof marketingObj[k].budget_share_percent === 'number') {
-            labels.push(k.toUpperCase());
-            data.push(marketingObj[k].budget_share_percent);
-        }
-    });
-
-    if (marketingObj.social_media) {
-        ["instagram", "linkedin", "youtube"].forEach(plat => {
-            if (marketingObj.social_media[plat] && typeof marketingObj.social_media[plat].budget_share_percent === 'number') {
-                labels.push(`SOCIAL: ${plat.toUpperCase()}`);
-                data.push(marketingObj.social_media[plat].budget_share_percent);
+        const mktKeys = ["organic", "content", "seo", "email", "influencer", "community", "referral", "pr"];
+        mktKeys.forEach(k => {
+            if (marketingObj[k] && typeof marketingObj[k].budget_share_percent === 'number') {
+                labels.push(k.toUpperCase());
+                data.push(marketingObj[k].budget_share_percent);
             }
         });
-    }
 
-    if (data.length === 0) return;
+        if (marketingObj.social_media) {
+            ["instagram", "linkedin", "youtube"].forEach(plat => {
+                if (marketingObj.social_media[plat] && typeof marketingObj.social_media[plat].budget_share_percent === 'number') {
+                    labels.push(`SOCIAL: ${plat.toUpperCase()}`);
+                    data.push(marketingObj.social_media[plat].budget_share_percent);
+                }
+            });
+        }
 
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: [
-                    '#6366f1', '#06b6d4', '#d946ef', '#f59e0b',
-                    '#10b981', '#fb7185', '#64748b', '#818cf8',
-                    '#22c55e', '#a855f7', '#ec4899'
-                ],
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.1)'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans', size: 8 } }
+        if (data.length === 0) return;
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#0891b2', '#0284c7', '#0d9488', '#6366f1',
+                        '#10b981', '#f59e0b', '#f43f5e', '#8b5cf6',
+                        '#06b6d4', '#3b82f6', '#14b8a6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#0f172a', font: { family: 'Plus Jakarta Sans', size: 8.5, weight: 600 } }
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.warn("Marketing budget chart render skipped:", e);
+    }
 }
 
 function renderRisksMatrixChart(risksList) {
-    const ctx = document.getElementById("risks-matrix-chart").getContext("2d");
-    if (!risksList || risksList.length === 0) return;
+    try {
+        const canvas = document.getElementById("risks-matrix-chart");
+        if (!canvas) return;
+        const existing = Chart.getChart(canvas);
+        if (existing) existing.destroy();
+        const ctx = canvas.getContext("2d");
+        if (!risksList || risksList.length === 0) return;
 
-    const labels = risksList.map(r => r.type);
-    const mapScore = (lvl) => {
-        if (!lvl) return 2;
-        const l = String(lvl).toLowerCase();
-        if (l.includes("high")) return 3;
-        if (l.includes("med")) return 2;
-        return 1;
-    };
+        const labels = risksList.map(r => r.type);
+        const mapScore = (lvl) => {
+            if (!lvl) return 2;
+            const l = String(lvl).toLowerCase();
+            if (l.includes("high")) return 3;
+            if (l.includes("med")) return 2;
+            return 1;
+        };
 
-    const impactData = risksList.map(r => mapScore(r.impact_level || r.level));
-    const likelihoodData = risksList.map(r => mapScore(r.likelihood));
+        const impactData = risksList.map(r => mapScore(r.impact_level || r.level));
+        const likelihoodData = risksList.map(r => mapScore(r.likelihood));
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Impact Severity',
-                    data: impactData,
-                    backgroundColor: 'rgba(239, 68, 68, 0.6)',
-                    borderColor: '#ef4444',
-                    borderWidth: 1.5,
-                    borderRadius: 3
-                },
-                {
-                    label: 'Likelihood',
-                    data: likelihoodData,
-                    backgroundColor: 'rgba(245, 158, 11, 0.6)',
-                    borderColor: '#f59e0b',
-                    borderWidth: 1.5,
-                    borderRadius: 3
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans' } }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { color: '#94a3b8' }
-                },
-                y: {
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: {
-                        color: '#94a3b8',
-                        stepSize: 1,
-                        callback: function (value) {
-                            if (value === 1) return 'Low';
-                            if (value === 2) return 'Medium';
-                            if (value === 3) return 'High';
-                            return '';
-                        }
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Impact Severity',
+                        data: impactData,
+                        backgroundColor: 'rgba(220, 38, 38, 0.75)',
+                        borderColor: '#dc2626',
+                        borderWidth: 1.5,
+                        borderRadius: 4
                     },
-                    min: 0,
-                    max: 4
+                    {
+                        label: 'Likelihood',
+                        data: likelihoodData,
+                        backgroundColor: 'rgba(217, 119, 6, 0.75)',
+                        borderColor: '#d97706',
+                        borderWidth: 1.5,
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#0f172a', font: { family: 'Plus Jakarta Sans', weight: 600 } }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans' } }
+                    },
+                    y: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            color: '#64748b',
+                            font: { family: 'Plus Jakarta Sans' },
+                            stepSize: 1,
+                            callback: function (value) {
+                                if (value === 1) return 'Low';
+                                if (value === 2) return 'Medium';
+                                if (value === 3) return 'High';
+                                return '';
+                            }
+                        },
+                        min: 0,
+                        max: 4
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (e) {
+        console.warn("Risks matrix chart render skipped:", e);
+    }
 }
 
 function setupScrollSpy() {

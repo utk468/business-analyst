@@ -9,7 +9,7 @@
 <body>
     <header>
         <div class="logo-container">
-          
+            <div class="logo-icon">✦</div>
             <div class="logo-text">Business Strategy</div>
         </div>
         <nav class="nav-links">
@@ -22,15 +22,55 @@
         <!-- Status Row -->
         <div style="display: flex; gap: 10px; margin-bottom: 2rem; align-items: center; flex-wrap: wrap;">
             <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">System Status:</span>
-            <div id="badge-db" class="status-badge local">Connecting Database...</div>
-            <div id="badge-ai" class="status-badge fallback">Checking AI Engine...</div>
+            <div id="badge-db" class="status-badge mongo">Checking Database...</div>
+            <div id="badge-ai" class="status-badge grok">Checking AI Engine...</div>
         </div>
 
         <!-- App Layout -->
         <div class="grid-2col" id="app-layout">
             <!-- Left Panel: Intake Form -->
             <section class="glass-panel" style="padding: 2.5rem;" id="form-panel">
-                <h2 style="margin-bottom: 1.5rem;">Intake Briefing</h2>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.25rem;">
+                    <h2>Intake Briefing</h2>
+                </div>
+
+                <!-- Intelligence Sources Information Box -->
+                <div class="glass-card" style="border-color: var(--aqua-300); background: var(--aqua-50); padding: 1.15rem; margin-bottom: 1.75rem; border-radius: var(--radius-md);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.65rem;">
+                        <span style="color: var(--primary-dark); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Integrated Market Intelligence Feeds
+                        </span>
+                        <span style="font-size: 0.7rem; font-weight: 700; background: #ffffff; color: var(--primary); padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid var(--aqua-200);">
+                            5 Live Sources
+                        </span>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.85rem; line-height: 1.45;">
+                        Autonomous agents actively retrieve and verify real-world benchmarks from these authoritative data networks:
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 7px;">
+                        <div style="display: flex; align-items: flex-start; gap: 8px; background: #ffffff; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary-dark); min-width: 140px; flex-shrink: 0;">Tracxn</span>
+                            <span style="font-size: 0.775rem; color: var(--text-secondary); line-height: 1.4;">Private market data tracking global startup funding rounds, cap tables, valuations, and emerging tech sectors.</span>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 8px; background: #ffffff; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary-dark); min-width: 140px; flex-shrink: 0;">Startup India (DPIIT)</span>
+                            <span style="font-size: 0.775rem; color: var(--text-secondary); line-height: 1.4;">Official government portal offering seed funding schemes (SISFS), tax incentives, and regulatory frameworks.</span>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 8px; background: #ffffff; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary-dark); min-width: 140px; flex-shrink: 0;">Crunchbase</span>
+                            <span style="font-size: 0.775rem; color: var(--text-secondary); line-height: 1.4;">Global venture capital directory for investor portfolios, competitor profiling, and funding round analytics.</span>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 8px; background: #ffffff; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary-dark); min-width: 140px; flex-shrink: 0;">Inc42 DataLabs</span>
+                            <span style="font-size: 0.775rem; color: var(--text-secondary); line-height: 1.4;">Tech ecosystem intelligence delivering sector reports, M&amp;A activity, and startup valuation multiples.</span>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 8px; background: #ffffff; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary-dark); min-width: 140px; flex-shrink: 0;">data.gov.in</span>
+                            <span style="font-size: 0.775rem; color: var(--text-secondary); line-height: 1.4;">Open government data portal providing macroeconomic statistics, demographic indicators, and public sector datasets.</span>
+                        </div>
+                    </div>
+                </div>
+
                 <form id="startup-form">
                     <div class="form-group">
                         <label for="startup_idea">Startup Idea / Vision</label>
@@ -44,7 +84,34 @@
                         </div>
                         <div>
                             <label for="country">Target Country / Region</label>
-                            <input type="text" id="country" placeholder="e.g. Germany, Global, United States" required>
+                            <input type="text" id="country" list="country-suggestions" placeholder="e.g. India, United States, Germany, UK, UAE..." required autocomplete="off">
+                            <datalist id="country-suggestions">
+                                <option value="India">
+                                <option value="United States">
+                                <option value="United Kingdom">
+                                <option value="Germany">
+                                <option value="France">
+                                <option value="Canada">
+                                <option value="Australia">
+                                <option value="United Arab Emirates (UAE)">
+                                <option value="Singapore">
+                                <option value="Japan">
+                                <option value="Saudi Arabia">
+                                <option value="Brazil">
+                                <option value="Switzerland">
+                                <option value="Netherlands">
+                                <option value="Italy">
+                                <option value="Spain">
+                                <option value="South Africa">
+                                <option value="Mexico">
+                                <option value="Indonesia">
+                                <option value="Malaysia">
+                                <option value="Philippines">
+                                <option value="Vietnam">
+                                <option value="South Korea">
+                                <option value="Sweden">
+                                <option value="Global / International">
+                            </datalist>
                         </div>
                     </div>
 
@@ -113,11 +180,20 @@
                             <div style="font-size:0.9rem; color: var(--text-secondary);">Scaling Roadmaps, Investor Attractiveness Scoring, & Executive Compilation.</div>
                         </div>
                     </div>
-                    <div class="glass-card" style="border-color: rgba(6, 182, 212, 0.15);">
-                        <span style="color: var(--secondary); font-weight:700; font-size:0.85rem; text-transform:uppercase; display:block; margin-bottom: 4px;">Live Data Searches Enabled</span>
-                        <p style="font-size:0.85rem; color: var(--text-secondary);">
-                            The research nodes automatically connect to search indices to pull recent market insights on target competitors and sectors.
+                    <div class="glass-card" style="border-color: var(--aqua-300); background: var(--aqua-50);">
+                        <span style="color: var(--primary-dark); font-weight:800; font-size:0.85rem; text-transform:uppercase; display:flex; align-items:center; gap:6px; margin-bottom: 8px;">
+                            Live Multi-Source Intelligence Active
+                        </span>
+                        <p style="font-size:0.825rem; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.5;">
+                            Autonomous research nodes pull authentic live sector datasets, funding trends, and competitor profiles across:
                         </p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <span style="font-size:0.75rem; font-weight:700; background:#ffffff; border:1px solid var(--border-default); padding:3px 8px; border-radius:var(--radius-sm); color:var(--primary-dark);">Tracxn</span>
+                            <span style="font-size:0.75rem; font-weight:700; background:#ffffff; border:1px solid var(--border-default); padding:3px 8px; border-radius:var(--radius-sm); color:var(--primary-dark);">Startup India (DPIIT)</span>
+                            <span style="font-size:0.75rem; font-weight:700; background:#ffffff; border:1px solid var(--border-default); padding:3px 8px; border-radius:var(--radius-sm); color:var(--primary-dark);">Crunchbase</span>
+                            <span style="font-size:0.75rem; font-weight:700; background:#ffffff; border:1px solid var(--border-default); padding:3px 8px; border-radius:var(--radius-sm); color:var(--primary-dark);">Inc42 DataLabs</span>
+                            <span style="font-size:0.75rem; font-weight:700; background:#ffffff; border:1px solid var(--border-default); padding:3px 8px; border-radius:var(--radius-sm); color:var(--primary-dark);">data.gov.in</span>
+                        </div>
                     </div>
                 </div>
 

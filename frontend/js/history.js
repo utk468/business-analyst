@@ -1,18 +1,21 @@
-import { getSystemStatus, fetchReports, deleteReport } from './api.js';
-import { escapeHtml } from './utils.js';
+import { getSystemStatus, fetchReports, deleteReport } from './api.js?v=5';
+import { escapeHtml } from './utils.js?v=5';
 
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
-    // Check system status
+function initHistory() {
     fetchSystemStatus();
-    
-    // Check if history dashboard elements exist
     if (document.getElementById("history-container")) {
         initHistoryHandler();
     }
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initHistory);
+} else {
+    initHistory();
+}
 
 
 
@@ -83,7 +86,8 @@ function initHistoryHandler() {
                         <div class="report-card-header">
                             <div class="report-card-title">${escapeHtml(meta.startup_idea)}</div>
                             <div class="report-card-meta">
-                                <span>${escapeHtml(meta.industry)} | ${escapeHtml(meta.country)}</span>
+                                <span>📍 ${escapeHtml(meta.country || "Global")} &bull; ${escapeHtml(meta.industry)}</span>
+                                <span style="color:var(--primary); font-weight:600;">${escapeHtml(meta.budget || "")}</span>
                             </div>
                         </div>
                         <div class="report-card-body">

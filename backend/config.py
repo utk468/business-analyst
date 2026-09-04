@@ -9,6 +9,7 @@ from pydantic import Field
 class Settings(BaseSettings):
     # API configuration
     groq_api_key: str = Field(default="", validation_alias="GROQ_API_KEY")
+    groq_model: str = Field(default="openai/gpt-oss-120b", validation_alias="GROQ_MODEL")
     
     # MongoDB configuration
     mongodb_url: str = Field(default="mongodb://localhost:27017", validation_alias="MONGODB_URL")

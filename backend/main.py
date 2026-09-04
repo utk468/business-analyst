@@ -54,7 +54,7 @@ async def get_status():
         "status": "online",
         "storage": db.storage_type,
         "grok_active": bool(settings.groq_api_key),
-        "database_connected": not db.use_fallback
+        "database_connected": bool(db.is_connected)
     }
 
 

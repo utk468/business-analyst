@@ -1,12 +1,12 @@
-#  AI Startup Consultant & Strategic Business Analysis Platform
+# AI Startup Consultant & Strategic Business Analysis Platform
 
 A multi-agent strategic business consulting platform built with **LangGraph**, **FastAPI**, **Groq AI**, and **MongoDB**. The platform deploys **15 specialized autonomous AI agents** to conduct parallel market research, competitor analysis, financial modeling, marketing strategy, SWOT analysis, and investment readiness evaluations for any startup idea or business concept.
 
 ---
 
-## ✨ Features
+## Features
 
-- **🧠 15 Autonomous AI Consulting Agents**:
+- **15 Autonomous AI Consulting Agents**:
   - **Market Research Agent**: Industry sizing, growth rates, and market trends (powered by DuckDuckGo live web search).
   - **Competitor Analysis Agent**: Direct/indirect competitor landscapes and moat strategies (powered by DuckDuckGo live web search).
   - **Customer Research Agent**: Target personas, pain points, and customer acquisition strategies.
@@ -23,19 +23,18 @@ A multi-agent strategic business consulting platform built with **LangGraph**, *
   - **Investor Readiness Agent**: Pitch deck narrative, key metrics required, and investor Q&A prep.
   - **Final Report Generator Agent**: Aggregates and synthesizes analysis from all 14 parallel nodes into an executive strategic report.
 
-- **⚡ Real-Time Streaming & Visualizer**:
+- **Real-Time Streaming & Visualizer**:
   - Track live progress and execution logs from all agents in real-time via **Server-Sent Events (SSE)**.
 
-- **🛡️ High Reliability & Dual Data Storage**:
-  - **Database Auto-Fallback**: Connects to **MongoDB** asynchronously; automatically falls back to local JSON storage (`backend/db_fallback.json`) if MongoDB is offline.
-  - **AI Engine Fallback**: Works with Groq API keys and gracefully defaults to built-in consulting fallback templates if API limits or key absence occurs.
+- **Direct Cloud/Local MongoDB Storage**:
+  - Asynchronously stores and indexes strategic reports in **MongoDB**.
 
-- **💻 Sleek Web Dashboard**:
+- **Sleek Web Dashboard**:
   - Single-page application UI for inputting business briefs, streaming agent activities, viewing executive reports, and browsing historical reports.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 graph TD
@@ -77,19 +76,18 @@ graph TD
         IR --> FR
     end
     
-    FR -->|Save Report| DB[(Database: MongoDB / JSON Fallback)]
+    FR -->|Save Report| DB[(Database: MongoDB)]
     FastAPI -->|SSE Stream /api/analyze/stream| User
 ```
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 BUSINESS_ANALYSIS/
 ├── backend/
 │   ├── agents/
-│   │   ├── fallbacks/       # Fallback generators for agent reports
 │   │   ├── prompts/         # Prompts for 15 AI agents
 │   │   ├── graph.py         # LangGraph StateGraph pipeline configuration
 │   │   ├── llm.py           # Groq AI API interaction layer
@@ -97,7 +95,7 @@ BUSINESS_ANALYSIS/
 │   │   ├── search.py        # Web search utility (DuckDuckGo API)
 │   │   └── state.py         # LangGraph AgentState definition
 │   ├── config.py            # Environment & app configuration settings
-│   ├── database.py          # Dual storage layer (MongoDB + JSON fallback)
+│   ├── database.py          # MongoDB storage layer
 │   ├── main.py              # FastAPI app endpoints and static file serving
 │   └── requirements.txt     # Python dependencies
 ├── frontend/
@@ -112,7 +110,7 @@ BUSINESS_ANALYSIS/
 
 ---
 
-## ⚙️ Prerequisites & Setup
+## Prerequisites & Setup
 
 ### Prerequisites
 - **Python**: `3.10` or higher
@@ -167,7 +165,7 @@ BUSINESS_ANALYSIS/
 
 ---
 
-## 📡 API Reference
+## API Reference
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
@@ -180,6 +178,6 @@ BUSINESS_ANALYSIS/
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License.

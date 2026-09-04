@@ -1,22 +1,19 @@
-import { API_BASE, AGENTS_LIST } from './config.js';
-import { getSystemStatus, submitBrief } from './api.js';
+import { API_BASE, AGENTS_LIST } from './config.js?v=5';
+import { getSystemStatus, submitBrief } from './api.js?v=5';
+import { getCountryCurrency } from './utils.js?v=5';
 
-
-
-// Initialize the application when the DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-   // fetching the system status
+function initApp() {
     fetchSystemStatus();
-    
-     
-    // initializing the form handler if the form is present
     if (document.getElementById("startup-form")) {
         initFormHandler();
     }
-});
+}
 
-
-
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initApp);
+} else {
+    initApp();
+}
 
 // fetchSystemStatus function fetches the status of the backend API
 // and updates the status badges on the frontend.
@@ -27,45 +24,66 @@ function fetchSystemStatus() {
             const aiBadge = document.getElementById("badge-ai");
             
             if (dbBadge) {
-                dbBadge.textContent = data.storage;
-                dbBadge.className = "status-badge " + (data.database_connected ? "mongo" : "local");
+                dbBadge.textContent = data.database_connected ? "MongoDB: Connected" : "MongoDB: Disconnected";
+                dbBadge.className = "status-badge " + (data.database_connected ? "mongo" : "error");
             }
             if (aiBadge) {
-                aiBadge.textContent = data.grok_active ? "Grok AI: Active" : "Consulting Engine (Fallback)";
-                aiBadge.className = "status-badge " + (data.grok_active ? "grok" : "fallback");
+                aiBadge.textContent = data.grok_active ? "Grok AI: Active" : "Grok AI: Key Missing";
+                aiBadge.className = "status-badge " + (data.grok_active ? "grok" : "error");
             }
         })
-
-
         .catch(err => {
             console.error("Failed to query API status:", err);
             const dbBadge = document.getElementById("badge-db");
+            const aiBadge = document.getElementById("badge-ai");
             if (dbBadge) {
-                dbBadge.textContent = "Offline";
+                dbBadge.textContent = "Database Offline";
                 dbBadge.className = "status-badge error";
             }
+            if (aiBadge) {
+                aiBadge.textContent = "AI Offline";
+                aiBadge.className = "status-badge error";
+            }
         });
-
-        
 }
-
-
-
-
-
 
 function initFormHandler() {
     const form = document.getElementById("startup-form");
+    const countryInput = document.getElementById("country");
+    const budgetSelect = document.getElementById("budget");
     const staticInfo = document.getElementById("static-info");
     const runnerPanel = document.getElementById("runner-panel");
     const logTerminal = document.getElementById("log-terminal-el");
     const progressBar = document.getElementById("progress-bar-el");
     const currentAgentTitle = document.getElementById("current-agent-display");
     const spinner = document.getElementById("runner-spinner");
-
     const viewReportBtn = document.getElementById("view-report-btn");
     
     let logsRenderedCount = 0;
+
+    function updateBudgetTiers(countryName) {
+        const curr = getCountryCurrency(countryName);
+        const budgets = curr.exampleBudgets || ["$10,000 - $25,000", "$25,000 - $100,000", "$100,000 - $500,000", "$500,000 - $2M+"];
+        
+        budgetSelect.innerHTML = `<option value="" disabled selected>Select Budget (${curr.code} ${curr.symbol})...</option>`;
+        budgets.forEach(b => {
+            const opt = document.createElement("option");
+            opt.value = b;
+            opt.textContent = b;
+            budgetSelect.appendChild(opt);
+        });
+    }
+
+    if (countryInput) {
+        countryInput.addEventListener("input", () => {
+            if (countryInput.value.trim().length >= 2) {
+                updateBudgetTiers(countryInput.value);
+            }
+        });
+        countryInput.addEventListener("change", () => {
+            updateBudgetTiers(countryInput.value);
+        });
+    }
     
 
 
