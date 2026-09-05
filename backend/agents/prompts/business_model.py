@@ -1,12 +1,12 @@
-from backend.agents.prompts.system_base import SYSTEM_INSTRUCTION_BASE
+from backend .agents .prompts .system_base import SYSTEM_INSTRUCTION_BASE 
 
-def get_business_model_prompt(state: dict) -> str:
-    return f"""{SYSTEM_INSTRUCTION_BASE}
+def get_business_model_prompt (state :dict )->str :
+    return f"""{SYSTEM_INSTRUCTION_BASE }
 You are the Business Model Agent. Design the revenue architecture, pricing model, and distribution channels for:
-Idea: {state['startup_idea']}
-Industry: {state['industry']}
-Budget: {state['budget']}
-Stage: {state['business_stage']}
+Idea: {state ['startup_idea']}
+Industry: {state ['industry']}
+Budget: {state ['budget']}
+Stage: {state ['business_stage']}
 
 Provide your analysis in the following JSON format:
 {{

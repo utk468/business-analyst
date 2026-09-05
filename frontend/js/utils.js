@@ -1,5 +1,3 @@
-// Shared UI Utility & Country Currency Localization Functions
-
 export const COUNTRY_CURRENCY_MAP = {
     "india": { symbol: "₹", code: "INR", name: "Indian Rupee", locale: "en-IN", rate: 85, exampleBudgets: ["₹1,00,000 - ₹5,00,000", "₹5,00,000 - ₹25,00,000", "₹25,00,000 - ₹1,00,00,000", "₹1,00,00,000 - ₹5,00,00,000+"] },
     "bharat": { symbol: "₹", code: "INR", name: "Indian Rupee", locale: "en-IN", rate: 85, exampleBudgets: ["₹1,00,000 - ₹5,00,000", "₹5,00,000 - ₹25,00,000", "₹25,00,000 - ₹1,00,00,000", "₹1,00,00,000 - ₹5,00,00,000+"] },
@@ -48,34 +46,24 @@ export const COUNTRY_CURRENCY_MAP = {
     "egypt": { symbol: "E£ ", code: "EGP", name: "Egyptian Pound", locale: "ar-EG", rate: 48, exampleBudgets: ["E£ 480,000 - E£ 1,200,000", "E£ 1,200,000 - E£ 4,800,000", "E£ 4,800,000 - E£ 24,000,000", "E£ 24,000,000+"] },
     "turkey": { symbol: "₺", code: "TRY", name: "Turkish Lira", locale: "tr-TR", rate: 34, exampleBudgets: ["350.000 ₺ - 850.000 ₺", "850.000 ₺ - 3.400.000 ₺", "3.400.000 ₺ - 17.000.000 ₺", "17.000.000 ₺+"] }
 };
-
 export function getCountryCurrency(countryName) {
     if (!countryName || typeof countryName !== "string") {
         return COUNTRY_CURRENCY_MAP["global"];
     }
-
     const clean = countryName.trim().toLowerCase();
-
-    // Direct match
     if (COUNTRY_CURRENCY_MAP[clean]) {
         return COUNTRY_CURRENCY_MAP[clean];
     }
-
-    // Substring match
     for (const [k, v] of Object.entries(COUNTRY_CURRENCY_MAP)) {
         if (clean.includes(k) || k.includes(clean)) {
             return v;
         }
     }
-
-    // Default USD if unrecognized
     return { symbol: "$", code: "USD", name: "US Dollar", locale: "en-US", rate: 1, exampleBudgets: ["$10,000 - $25,000", "$25,000 - $100,000", "$100,000 - $500,000", "$500,000 - $2M+"] };
 }
-
 export function formatCurrency(amount, countryName) {
     const num = Number(amount);
     if (isNaN(num)) return amount || "0";
-
     const curr = getCountryCurrency(countryName);
     try {
         const formatted = Math.round(num).toLocaleString(curr.locale);
@@ -84,14 +72,10 @@ export function formatCurrency(amount, countryName) {
         return `${curr.symbol}${Math.round(num).toLocaleString()}`;
     }
 }
-
 export function formatCompactCurrency(amount, countryName) {
     const num = Number(amount);
     if (isNaN(num)) return amount || "0";
-
     const curr = getCountryCurrency(countryName);
-
-    // Special Indian numbering format (Crore / Lakh) if India
     if (curr.code === "INR") {
         if (num >= 10000000) {
             return `${curr.symbol}${(num / 10000000).toFixed(1)} Cr`;
@@ -102,7 +86,6 @@ export function formatCompactCurrency(amount, countryName) {
         }
         return `${curr.symbol}${num.toLocaleString(curr.locale)}`;
     }
-
     if (num >= 1000000000) {
         return `${curr.symbol}${(num / 1000000000).toFixed(1)}B`;
     } else if (num >= 1000000) {
@@ -112,7 +95,6 @@ export function formatCompactCurrency(amount, countryName) {
     }
     return `${curr.symbol}${num.toLocaleString(curr.locale)}`;
 }
-
 export function escapeHtml(unsafe) {
     if (unsafe === undefined || unsafe === null) return "";
     return String(unsafe)
@@ -122,13 +104,11 @@ export function escapeHtml(unsafe) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
-
 export function formatNumber(val) {
     const num = Number(val);
     if (isNaN(num)) return val;
     return num.toLocaleString();
 }
-
 export function formatTextHtml(text) {
     if (!text) return "";
     return escapeHtml(text)
@@ -136,7 +116,6 @@ export function formatTextHtml(text) {
         .replace(/\n/g, "<br>")
         .split("</p><p>").map(p => `<p style="margin-bottom: 1rem;">${p}</p>`).join("");
 }
-
 export function renderBulletList(element, list) {
     if (!element) return;
     element.innerHTML = "";
@@ -151,7 +130,6 @@ export function renderBulletList(element, list) {
         element.appendChild(li);
     });
 }
-
 export function renderRoadmapMilestones(element, milestones) {
     if (!element) return;
     element.innerHTML = "";

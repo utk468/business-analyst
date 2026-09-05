@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Strategy Advisor - Chatbot</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">✦</div>
+            <div class="logo-text">Business Strategy</div>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-btn secondary">New Strategy</a>
+            <a href="chat.html" class="nav-btn primary">AI Consultant Chat</a>
+            <a href="history.html" class="nav-btn secondary">Past Strategies</a>
+        </nav>
+    </header>
+
+    <main class="container" style="max-width: 1000px; margin: 0 auto; padding-bottom: 3rem;">
+        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1>Executive AI Strategy Consultant</h1>
+                <p style="color: var(--text-secondary);">Real-time multi-turn advisory for startup validation, unit economics, market penetration, and investor pitch deck preparation.</p>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Engine:</span>
+                <span class="status-badge grok">Groq / Grok LLM</span>
+            </div>
+        </div>
+
+        
+        <div id="chatbot-container"></div>
+    </main>
+
+    <script type="module" src="js/chat.js"></script>
+</body>
+</html>

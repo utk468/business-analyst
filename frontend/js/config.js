@@ -1,6 +1,4 @@
-// Shared Configurations
 export const API_BASE = window.location.origin;
-
 export const AGENTS_LIST = [
     "Market Research Agent",
     "Competitor Analysis Agent",

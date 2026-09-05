@@ -1,6 +1,3 @@
-/* Components: Form Elements, Buttons, Steppers, Terminal, Badges & Animations */
-
-/* Form Styling */
 .form-section-title {
     font-size: 1.25rem;
     margin-bottom: 1.5rem;
@@ -8,64 +5,57 @@
     font-weight: 700;
     letter-spacing: -0.02em;
 }
-
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.35rem;
 }
-
 .form-group.row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
 }
-
 @media (max-width: 640px) {
     .form-group.row {
         grid-template-columns: 1fr;
     }
 }
-
 label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.45rem;
     font-size: 0.8rem;
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
 }
-
 input[type="text"],
 input[type="number"],
 select,
 textarea {
     width: 100%;
-    padding: 0.85rem 1rem;
+    padding: 0.8rem 1rem;
     background: var(--bg-input);
-    border: 1px solid var(--border-default);
+    border: 1.5px solid var(--border-default);
     border-radius: var(--radius-md);
     color: var(--text-primary);
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.925rem;
     line-height: 1.5;
     transition: var(--transition);
     box-shadow: var(--shadow-xs);
+    box-sizing: border-box;
 }
-
 input::placeholder,
 textarea::placeholder {
     color: var(--text-muted);
 }
-
 input:focus,
 select:focus,
 textarea:focus {
     outline: none;
-    border-color: var(--aqua-500);
+    border-color: var(--primary);
     background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.15), var(--shadow-xs);
+    box-shadow: 0 0 0 3px var(--primary-glow), var(--shadow-xs);
 }
-
 select {
     appearance: none;
     -webkit-appearance: none;
@@ -76,64 +66,58 @@ select {
     padding-right: 2.5rem;
     cursor: pointer;
 }
-
 textarea {
     resize: vertical;
-    min-height: 110px;
+    min-height: 105px;
 }
-
-/* Button System */
 .nav-btn {
-    padding: 0.6rem 1.25rem;
+    padding: 0.55rem 1.15rem;
     border-radius: var(--radius-md);
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     transition: var(--transition);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 7px;
     cursor: pointer;
     text-decoration: none;
     border: none;
+    box-sizing: border-box;
 }
-
 .nav-btn.secondary {
     background: #ffffff;
     border: 1px solid var(--border-default);
     color: var(--text-primary);
     box-shadow: var(--shadow-xs);
 }
-
 .nav-btn.secondary:hover {
     background: var(--aqua-50);
     border-color: var(--aqua-400);
     color: var(--primary);
     box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
 }
-
 .nav-btn.primary {
     background: var(--primary-gradient);
     color: #ffffff;
     box-shadow: var(--shadow-aqua-sm);
 }
-
 .nav-btn.primary:hover {
     background: var(--primary-gradient-hover);
     box-shadow: var(--shadow-aqua);
     transform: translateY(-1px);
     color: #ffffff;
 }
-
 .btn-submit {
     width: 100%;
-    padding: 1rem 1.5rem;
+    padding: 0.95rem 1.5rem;
     border-radius: var(--radius-md);
     background: var(--primary-gradient);
     color: #ffffff;
     border: none;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.975rem;
     cursor: pointer;
     box-shadow: var(--shadow-aqua-sm);
     display: flex;
@@ -142,19 +126,16 @@ textarea {
     gap: 10px;
     transition: var(--transition);
     letter-spacing: -0.01em;
+    box-sizing: border-box;
 }
-
 .btn-submit:hover {
     background: var(--primary-gradient-hover);
     transform: translateY(-2px);
     box-shadow: var(--shadow-aqua);
 }
-
 .btn-submit:active {
     transform: translateY(0);
 }
-
-/* Stepper & Execution Progress */
 #runner-panel {
     display: none;
     padding: 0;
@@ -163,7 +144,6 @@ textarea {
     gap: 1.25rem;
     height: 100%;
 }
-
 .runner-header {
     display: flex;
     justify-content: space-between;
@@ -171,7 +151,6 @@ textarea {
     padding-bottom: 0.85rem;
     border-bottom: 1px solid var(--border-default);
 }
-
 .progress-container {
     width: 100%;
     background: #e2e8f0;
@@ -179,7 +158,6 @@ textarea {
     border-radius: var(--radius-full);
     overflow: hidden;
 }
-
 .progress-bar {
     height: 100%;
     width: 0%;
@@ -188,17 +166,15 @@ textarea {
     transition: width 0.4s ease;
     box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
 }
-
 .agent-steps {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 8px;
     margin-bottom: 0.5rem;
     max-height: 220px;
     overflow-y: auto;
     padding-right: 6px;
 }
-
 .step-card {
     background: #ffffff;
     border: 1px solid var(--border-default);
@@ -208,22 +184,19 @@ textarea {
     align-items: center;
     gap: 8px;
     transition: var(--transition);
-    opacity: 0.7;
+    opacity: 0.75;
 }
-
 .step-card.active {
     opacity: 1;
     border-color: var(--primary);
     background: var(--aqua-50);
     box-shadow: 0 0 0 2px var(--aqua-200), var(--shadow-sm);
 }
-
 .step-card.completed {
     opacity: 1;
     border-color: var(--success-border);
     background: var(--success-bg);
 }
-
 .step-badge {
     width: 22px;
     height: 22px;
@@ -237,45 +210,38 @@ textarea {
     font-weight: 700;
     flex-shrink: 0;
 }
-
 .step-card.active .step-badge {
     background: var(--primary);
     color: #ffffff;
     box-shadow: 0 0 10px var(--primary-glow);
     animation: pulse 1.6s infinite;
 }
-
 .step-card.completed .step-badge {
     background: var(--success);
     color: #ffffff;
 }
-
 .step-name {
-    font-size: 0.825rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 .step-card.active .step-name {
     color: var(--primary-dark);
     font-weight: 700;
 }
-
 .step-card.completed .step-name {
     color: var(--text-secondary);
     text-decoration: line-through;
 }
-
-/* High-Tech Terminal Log Stream */
 .log-terminal {
     background: #0b1329;
     border: 1px solid #1e293b;
     border-radius: var(--radius-md);
-    padding: 1.1rem;
-    font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+    padding: 1rem;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.825rem;
     color: #38bdf8;
     height: 180px;
@@ -285,17 +251,13 @@ textarea {
     gap: 7px;
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4), var(--shadow-sm);
 }
-
 .log-entry {
     line-height: 1.45;
     word-break: break-word;
 }
-
 .log-entry.system { color: #f472b6; font-weight: 500; }
 .log-entry.error { color: #f87171; font-weight: 600; }
 .log-entry.info { color: #67e8f9; }
-
-/* Status Badges */
 .status-badge {
     display: inline-flex;
     align-items: center;
@@ -308,7 +270,6 @@ textarea {
     letter-spacing: 0.04em;
     box-shadow: var(--shadow-xs);
 }
-
 .status-badge::before {
     content: "";
     width: 6px;
@@ -317,59 +278,48 @@ textarea {
     background: currentColor;
     display: inline-block;
 }
-
 .status-badge.mongo::before,
 .status-badge.grok::before {
     box-shadow: 0 0 6px currentColor;
     animation: badge-pulse 2s infinite ease-in-out;
 }
-
 @keyframes badge-pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.35; transform: scale(0.75); }
 }
-
 .status-badge.grok {
     background: var(--aqua-50);
     color: var(--primary-dark);
     border: 1px solid var(--aqua-200);
 }
-
 .status-badge.fallback {
     background: var(--warning-bg);
     color: var(--warning);
     border: 1px solid var(--warning-border);
 }
-
 .status-badge.mongo {
     background: var(--success-bg);
     color: var(--success);
     border: 1px solid var(--success-border);
 }
-
 .status-badge.local {
     background: #f1f5f9;
     color: var(--text-secondary);
     border: 1px solid var(--border-default);
 }
-
 .status-badge.error {
     background: var(--error-bg);
     color: var(--error);
     border: 1px solid var(--error-border);
 }
-
-/* Animations */
 @keyframes pulse {
     0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.45); }
     70% { transform: scale(1.06); box-shadow: 0 0 0 8px rgba(6, 182, 212, 0); }
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
 }
-
 @keyframes spinner {
     to { transform: rotate(360deg); }
 }
-
 .spinner {
     width: 22px;
     height: 22px;

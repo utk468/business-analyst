@@ -1,10 +1,10 @@
-from backend.agents.prompts.system_base import SYSTEM_INSTRUCTION_BASE
+from backend .agents .prompts .system_base import SYSTEM_INSTRUCTION_BASE 
 
-def get_swot_prompt(state: dict) -> str:
-    return f"""{SYSTEM_INSTRUCTION_BASE}
+def get_swot_prompt (state :dict )->str :
+    return f"""{SYSTEM_INSTRUCTION_BASE }
 You are the SWOT Analysis Agent. Conduct a SWOT analysis and recommend actions:
-Idea: {state['startup_idea']}
-Industry: {state['industry']}
+Idea: {state ['startup_idea']}
+Industry: {state ['industry']}
 
 Provide your analysis in the following JSON format:
 {{

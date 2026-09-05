@@ -1,7 +1,7 @@
-from backend.agents.prompts.system_base import SYSTEM_INSTRUCTION_BASE
+from backend .agents .prompts .system_base import SYSTEM_INSTRUCTION_BASE 
 
-def get_final_report_prompt(state: dict) -> str:
-    return f"""{SYSTEM_INSTRUCTION_BASE}
+def get_final_report_prompt (state :dict )->str :
+    return f"""{SYSTEM_INSTRUCTION_BASE }
 You are the Final Report Generator Agent. Create an Executive Summary and compile/harmonize the entire report.
 Use the data gathered by the previous 14 agents in the state.
 

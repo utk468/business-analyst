@@ -1,28 +1,22 @@
 import { API_BASE, AGENTS_LIST } from './config.js?v=5';
 import { getSystemStatus, submitBrief } from './api.js?v=5';
 import { getCountryCurrency } from './utils.js?v=5';
-
 function initApp() {
     fetchSystemStatus();
     if (document.getElementById("startup-form")) {
         initFormHandler();
     }
 }
-
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initApp);
 } else {
     initApp();
 }
-
-// fetchSystemStatus function fetches the status of the backend API
-// and updates the status badges on the frontend.
 function fetchSystemStatus() {
     getSystemStatus()
         .then(data => {
             const dbBadge = document.getElementById("badge-db");
             const aiBadge = document.getElementById("badge-ai");
-            
             if (dbBadge) {
                 dbBadge.textContent = data.database_connected ? "MongoDB: Connected" : "MongoDB: Disconnected";
                 dbBadge.className = "status-badge " + (data.database_connected ? "mongo" : "error");
@@ -46,7 +40,6 @@ function fetchSystemStatus() {
             }
         });
 }
-
 function initFormHandler() {
     const form = document.getElementById("startup-form");
     const countryInput = document.getElementById("country");
@@ -58,13 +51,10 @@ function initFormHandler() {
     const currentAgentTitle = document.getElementById("current-agent-display");
     const spinner = document.getElementById("runner-spinner");
     const viewReportBtn = document.getElementById("view-report-btn");
-    
     let logsRenderedCount = 0;
-
     function updateBudgetTiers(countryName) {
         const curr = getCountryCurrency(countryName);
         const budgets = curr.exampleBudgets || ["$10,000 - $25,000", "$25,000 - $100,000", "$100,000 - $500,000", "$500,000 - $2M+"];
-        
         budgetSelect.innerHTML = `<option value="" disabled selected>Select Budget (${curr.code} ${curr.symbol})...</option>`;
         budgets.forEach(b => {
             const opt = document.createElement("option");
@@ -73,7 +63,6 @@ function initFormHandler() {
             budgetSelect.appendChild(opt);
         });
     }
-
     if (countryInput) {
         countryInput.addEventListener("input", () => {
             if (countryInput.value.trim().length >= 2) {
@@ -84,9 +73,6 @@ function initFormHandler() {
             updateBudgetTiers(countryInput.value);
         });
     }
-    
-
-
     form.addEventListener("submit", (e) => {
         e.preventDefault();
         const payload = {
@@ -98,52 +84,31 @@ function initFormHandler() {
             business_stage: document.getElementById("business_stage").value,
             additional_information: document.getElementById("additional_information").value
         };
-        
         Array.from(form.elements).forEach(el => el.disabled = true);
         const submitBtn = document.getElementById("submit-btn");
         submitBtn.style.opacity = "0.5";
         submitBtn.querySelector("span").textContent = "Analyzing Inputs...";
-        
         staticInfo.style.display = "none";
         runnerPanel.style.display = "flex";
-        
-        // Firing request to the backend
         submitBrief(payload)
             .then(data => {
-                // getting task id
                 const taskId = data.task_id;
-                // setting up event source to receive real-time logs
                 setupEventSource(taskId);
             })
             .catch(err => {
-                // handling submission errors
                 console.error("Submission failed:", err);
                 appendLogLine(`[Error] Failed to initiate strategy task: ${err.message}`, "error");
                 spinner.style.display = "none";
             });
     });
-    
-
-    // setupEventSource is a helper function that handles
-    //  the real-time streaming  of logs from the backend server 
-    // to the frontend.
     function setupEventSource(taskId) {
         appendLogLine("[System] Establishing connection to multi-agent stream...", "system");
-        // EventSource is a JavaScript API used to receive real-time
-        // updates from a server using Server-Sent Events (SSE).
         const eventSource = new EventSource(`${API_BASE}/api/analyze/stream/${taskId}`);
-        // onmessage is an event handler in JavaScript that runs automatically
-        // whenever an EventSource receives a message from the server.
         eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            //  Update Progress Bar
             progressBar.style.width = `${data.progress}%`;
-            //  Update Active Agent title
             currentAgentTitle.textContent = data.current_agent;
-            //  Update Stepper layout
             updateStepperUI(data.current_agent);
-        
-            // 4. Update live logs terminal
             if (data.logs && data.logs.length > logsRenderedCount) {
                 for (let i = logsRenderedCount; i < data.logs.length; i++) {
                     const line = data.logs[i];
@@ -154,20 +119,14 @@ function initFormHandler() {
                 }
                 logsRenderedCount = data.logs.length;
             }
-            
-            // 5. Complete Execution
             if (data.completed) {
                 spinner.style.display = "none";
-                // closing server connection
                 eventSource.close();
-                
                 if (data.error) {
                     appendLogLine(`[Error] Execution halted: ${data.error}`, "error");
                 } else {
                     appendLogLine(`[System] Execution finished. Launching dashboard...`, "system");
                     progressBar.style.background = "var(--success)";
-                    
-                    // Showing  report button
                     viewReportBtn.style.display = "flex";
                     viewReportBtn.onclick = () => {
                         window.location.href = `report.html?id=${data.report_id}`;
@@ -175,25 +134,16 @@ function initFormHandler() {
                 }
             }
         };
-        
-        // Event handler for SSE errors
         eventSource.onerror = (err) => {
             console.error("SSE stream error:", err);
             appendLogLine("[Error] Connection lost to analysis process. Trying to reconnect...", "error");
         };
     }
-    
-
-    // updateStepperUI is a helper function that updates the UI
-    // of the stepper based on the current agent name.
     function updateStepperUI(currentAgentName) {
-
         const currentIdx = AGENTS_LIST.indexOf(currentAgentName);
-        
         for (let i = 0; i < AGENTS_LIST.length; i++) {
             const stepCard = document.getElementById(`step-${i}`);
             if (!stepCard) continue;
-            
             if (i < currentIdx) {
                 stepCard.className = "step-card completed";
             } else if (i === currentIdx) {
@@ -204,9 +154,6 @@ function initFormHandler() {
             }
         }
     }
-    
-
-
     function appendLogLine(text, type = "info") {
         const div = document.createElement("div");
         div.className = `log-entry ${type}`;
@@ -214,6 +161,4 @@ function initFormHandler() {
         logTerminal.appendChild(div);
         logTerminal.scrollTop = logTerminal.scrollHeight;
     }
-
-
 }

@@ -1,11 +1,11 @@
-from backend.agents.prompts.system_base import SYSTEM_INSTRUCTION_BASE
+from backend .agents .prompts .system_base import SYSTEM_INSTRUCTION_BASE 
 
-def get_marketing_prompt(state: dict) -> str:
-    return f"""{SYSTEM_INSTRUCTION_BASE}
+def get_marketing_prompt (state :dict )->str :
+    return f"""{SYSTEM_INSTRUCTION_BASE }
 You are the Marketing Agent. Create a complete marketing strategy:
-Idea: {state['startup_idea']}
-Industry: {state['industry']}
-Target Audience: {state['target_audience']}
+Idea: {state ['startup_idea']}
+Industry: {state ['industry']}
+Target Audience: {state ['target_audience']}
 
 Provide your analysis in the following JSON format:
 {{

@@ -1,12 +1,8 @@
-/* Views: Vault/History, Report Layout, Table of Contents, SWOT, Personas, Risks & Tables */
-
-/* History / Vault View */
 .history-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 1.5rem;
 }
-
 .report-card {
     display: flex;
     flex-direction: column;
@@ -19,8 +15,8 @@
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
 }
-
 .report-card::before {
     content: "";
     position: absolute;
@@ -32,23 +28,19 @@
     opacity: 0;
     transition: var(--transition);
 }
-
 .report-card:hover {
     border-color: var(--aqua-300);
     box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.12), var(--shadow-sm);
     transform: translateY(-2px);
 }
-
 .report-card:hover::before {
     opacity: 1;
 }
-
 .report-card-header {
     border-bottom: 1px solid var(--border-subtle);
     padding-bottom: 0.85rem;
     margin-bottom: 1rem;
 }
-
 .report-card-title {
     font-size: 1.15rem;
     font-weight: 700;
@@ -56,7 +48,6 @@
     line-height: 1.35;
     color: var(--text-primary);
 }
-
 .report-card-meta {
     font-size: 0.8rem;
     color: var(--text-muted);
@@ -64,7 +55,6 @@
     justify-content: space-between;
     font-weight: 500;
 }
-
 .report-card-body {
     flex-grow: 1;
     font-size: 0.9rem;
@@ -72,16 +62,14 @@
     margin-bottom: 1.25rem;
     line-height: 1.55;
 }
-
 .report-card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
 }
-
 .card-btn {
-    padding: 0.6rem 1.1rem;
+    padding: 0.55rem 1rem;
     border-radius: var(--radius-md);
     font-size: 0.85rem;
     font-weight: 600;
@@ -90,39 +78,35 @@
     transition: var(--transition);
     border: none;
     text-decoration: none;
+    box-sizing: border-box;
 }
-
 .card-btn.view {
     background: var(--aqua-50);
     color: var(--primary-dark);
     border: 1px solid var(--aqua-200);
     flex-grow: 1;
 }
-
 .card-btn.view:hover {
     background: var(--primary);
     color: #ffffff;
     border-color: var(--primary);
     box-shadow: var(--shadow-aqua-sm);
+    transform: translateY(-1px);
 }
-
 .card-btn.delete {
     background: #ffffff;
     border: 1px solid var(--error-border);
     color: var(--error);
-    padding: 0.55rem 0.75rem;
+    padding: 0.55rem 0.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-md);
 }
-
 .card-btn.delete:hover {
     background: var(--error-bg);
     border-color: var(--error);
 }
-
-/* Report Detailed Blueprint View */
 .report-layout {
     display: grid;
     grid-template-columns: 280px 1fr;
@@ -130,13 +114,11 @@
     min-height: 80vh;
     align-items: start;
 }
-
-@media (max-width: 1024px) {
+@media (max-width: 1080px) {
     .report-layout {
         grid-template-columns: 1fr;
     }
 }
-
 .report-sidebar {
     position: sticky;
     top: 5.5rem;
@@ -151,15 +133,13 @@
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-sm);
 }
-
-@media (max-width: 1024px) {
+@media (max-width: 1080px) {
     .report-sidebar {
         position: relative;
         top: 0;
-        max-height: 320px;
+        max-height: 300px;
     }
 }
-
 .toc-link {
     display: block;
     padding: 0.55rem 0.9rem;
@@ -171,25 +151,21 @@
     transition: var(--transition-fast);
     text-decoration: none;
 }
-
 .toc-link:hover {
     color: var(--primary);
     background: var(--aqua-50);
 }
-
 .toc-link.active {
     color: var(--primary-dark);
     background: var(--aqua-50);
     border-left-color: var(--primary);
     font-weight: 700;
 }
-
 .report-content {
     display: flex;
     flex-direction: column;
     gap: 2rem;
 }
-
 .report-section {
     padding: 2.25rem;
     scroll-margin-top: 5.5rem;
@@ -197,22 +173,19 @@
     border: 1px solid var(--border-default);
     border-radius: var(--radius-xl);
     box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    box-sizing: border-box;
 }
-
 @media (max-width: 640px) {
     .report-section {
-        padding: 1.5rem;
+        padding: 1.35rem;
     }
 }
-
-/* Metric Cards */
 .metric-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1.25rem;
     margin-bottom: 2rem;
 }
-
 .metric-card {
     background: #ffffff;
     border: 1px solid var(--border-default);
@@ -222,13 +195,11 @@
     box-shadow: var(--shadow-xs);
     transition: var(--transition);
 }
-
 .metric-card:hover {
     border-color: var(--aqua-300);
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
 }
-
 .metric-val {
     font-size: 2rem;
     font-weight: 800;
@@ -238,7 +209,6 @@
     margin-bottom: 4px;
     letter-spacing: -0.03em;
 }
-
 .metric-label {
     font-size: 0.775rem;
     font-weight: 700;
@@ -246,38 +216,32 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
-
-/* SWOT Analysis Box - Modern SaaS Cards */
 .swot-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
 }
-
 @media (max-width: 680px) {
     .swot-grid {
         grid-template-columns: 1fr;
     }
 }
-
 .swot-box {
     padding: 1.5rem;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-default);
     box-shadow: var(--shadow-xs);
     transition: var(--transition);
+    box-sizing: border-box;
 }
-
 .swot-box:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
-
 .swot-box.s { background: #f0fdf4; border-color: #bbf7d0; }
 .swot-box.w { background: #fef2f2; border-color: #fecaca; }
 .swot-box.o { background: var(--aqua-50); border-color: var(--aqua-200); }
 .swot-box.t { background: #fffbeb; border-color: #fde68a; }
-
 .swot-box h3 {
     font-size: 1.15rem;
     margin-bottom: 0.85rem;
@@ -286,19 +250,16 @@
     gap: 8px;
     font-weight: 700;
 }
-
 .swot-box.s h3 { color: #15803d; }
 .swot-box.w h3 { color: #b91c1c; }
 .swot-box.o h3 { color: var(--primary-dark); }
 .swot-box.t h3 { color: #b45309; }
-
 .swot-list {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-
 .swot-list li {
     font-size: 0.875rem;
     color: var(--text-secondary);
@@ -306,7 +267,6 @@
     position: relative;
     line-height: 1.5;
 }
-
 .swot-list li::before {
     content: "•";
     position: absolute;
@@ -314,8 +274,6 @@
     font-weight: bold;
     color: currentColor;
 }
-
-/* Tabular Financial Projections */
 table {
     width: 100%;
     border-collapse: separate;
@@ -327,13 +285,11 @@ table {
     overflow: hidden;
     box-shadow: var(--shadow-xs);
 }
-
 th, td {
     padding: 0.9rem 1.1rem;
     text-align: left;
     border-bottom: 1px solid var(--border-default);
 }
-
 th {
     background: #f8fafc;
     font-weight: 700;
@@ -343,26 +299,20 @@ th {
     letter-spacing: 0.04em;
     border-bottom: 2px solid var(--border-default);
 }
-
 tr:last-child td {
     border-bottom: none;
 }
-
 tr:nth-child(even) {
     background: #fafafa;
 }
-
 tr:hover {
     background: var(--aqua-50);
 }
-
-/* User Personas */
 .personas-slider {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
-
 .persona-profile {
     display: grid;
     grid-template-columns: 240px 1fr;
@@ -373,20 +323,18 @@ tr:hover {
     padding: 1.75rem;
     box-shadow: var(--shadow-xs);
     transition: var(--transition);
+    box-sizing: border-box;
 }
-
 .persona-profile:hover {
     border-color: var(--aqua-300);
     box-shadow: var(--shadow-md);
 }
-
 @media (max-width: 768px) {
     .persona-profile {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
 }
-
 .persona-avatar-box {
     text-align: center;
     border-right: 1px solid var(--border-default);
@@ -396,7 +344,6 @@ tr:hover {
     align-items: center;
     justify-content: center;
 }
-
 @media (max-width: 768px) {
     .persona-avatar-box {
         border-right: none;
@@ -405,7 +352,6 @@ tr:hover {
         padding-bottom: 1.25rem;
     }
 }
-
 .persona-avatar {
     width: 76px;
     height: 76px;
@@ -418,25 +364,21 @@ tr:hover {
     font-size: 1.85rem;
     box-shadow: 0 4px 14px var(--primary-glow);
 }
-
 .persona-name {
     font-size: 1.15rem;
     font-weight: 700;
     margin-bottom: 6px;
     color: var(--text-primary);
 }
-
 .persona-stat {
     font-size: 0.8rem;
     color: var(--text-muted);
     margin-bottom: 4px;
 }
-
 .persona-stat span {
     color: var(--text-secondary);
     font-weight: 600;
 }
-
 .persona-details h4 {
     font-size: 0.95rem;
     color: var(--primary-dark);
@@ -446,12 +388,9 @@ tr:hover {
     font-weight: 700;
     letter-spacing: 0.03em;
 }
-
 .persona-details h4:first-of-type {
     margin-top: 0;
 }
-
-/* Risks Lists */
 .risk-item {
     padding: 1.1rem;
     border-radius: var(--radius-md);
@@ -464,26 +403,23 @@ tr:hover {
     align-items: center;
     box-shadow: var(--shadow-xs);
     transition: var(--transition);
+    box-sizing: border-box;
 }
-
 .risk-item:hover {
     border-color: var(--aqua-300);
     box-shadow: var(--shadow-sm);
 }
-
 @media (max-width: 768px) {
     .risk-item {
         grid-template-columns: 1fr;
         gap: 8px;
     }
 }
-
 .risk-type {
     font-weight: 700;
     color: var(--text-primary);
     font-size: 0.95rem;
 }
-
 .risk-indicator {
     padding: 3px 10px;
     border-radius: var(--radius-full);
@@ -493,7 +429,6 @@ tr:hover {
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
-
 .risk-indicator.high { background: var(--error-bg); color: var(--error); border: 1px solid var(--error-border); }
 .risk-indicator.medium { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning-border); }
 .risk-indicator.low { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }

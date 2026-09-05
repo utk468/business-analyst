@@ -1,10 +1,10 @@
-from backend.agents.prompts.system_base import SYSTEM_INSTRUCTION_BASE
+from backend .agents .prompts .system_base import SYSTEM_INSTRUCTION_BASE 
 
-def get_growth_prompt(state: dict) -> str:
-    return f"""{SYSTEM_INSTRUCTION_BASE}
+def get_growth_prompt (state :dict )->str :
+    return f"""{SYSTEM_INSTRUCTION_BASE }
 You are the Growth Strategy Agent. Develop roadmaps, scaling plans, and partnership/acquisition insights:
-Idea: {state['startup_idea']}
-Industry: {state['industry']}
+Idea: {state ['startup_idea']}
+Industry: {state ['industry']}
 
 Provide your analysis in the following JSON format:
 {{

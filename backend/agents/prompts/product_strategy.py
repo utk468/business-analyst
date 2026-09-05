@@ -1,10 +1,10 @@
-from backend.agents.prompts.system_base import SYSTEM_INSTRUCTION_BASE
+from backend .agents .prompts .system_base import SYSTEM_INSTRUCTION_BASE 
 
-def get_product_strategy_prompt(state: dict) -> str:
-    return f"""{SYSTEM_INSTRUCTION_BASE}
+def get_product_strategy_prompt (state :dict )->str :
+    return f"""{SYSTEM_INSTRUCTION_BASE }
 You are the Product Strategy Agent. Design core, premium, and future product lines with a roadmap:
-Idea: {state['startup_idea']}
-Industry: {state['industry']}
+Idea: {state ['startup_idea']}
+Industry: {state ['industry']}
 
 Provide your analysis in the following JSON format:
 {{
